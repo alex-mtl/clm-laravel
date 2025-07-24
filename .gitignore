@@ -1,0 +1,63 @@
+# Laravel default .gitignore with some common additions
+
+# Dependency directories
+/node_modules
+/vendor
+
+# Environment files
+.env
+.env.*.local
+.env.local
+.env.testing
+
+# Storage directory
+/storage/*.key
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/testing/*
+/storage/framework/views/*
+!/storage/framework/cache/.gitkeep
+!/storage/framework/sessions/.gitkeep
+!/storage/framework/testing/.gitkeep
+!/storage/framework/views/.gitkeep
+
+# Logs
+*.log
+*.log.*
+/storage/logs/*
+
+# Cache and config files
+/bootstrap/cache/*
+!.bootstrap/cache/.gitkeep
+
+# Debugging
+.phpunit.result.cache
+docker-compose.override.yml
+
+# IDE files
+.idea
+.vscode
+*.swp
+*.swo
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Local development tools
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+
+# Built assets
+/public/hot
+/public/storage
+/public/mix-manifest.json
+
+# Testing
+/coverage
+
+# Laravel specific
+.phpstorm.meta.php
+_ide_helper.php
