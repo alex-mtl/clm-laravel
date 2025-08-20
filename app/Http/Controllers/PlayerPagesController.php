@@ -5,58 +5,45 @@ namespace App\Http\Controllers;
 use App\Models\Club;
 use App\Models\Country;
 use App\Models\City;
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-class UserController extends Controller
+class PlayerPagesController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $users = User::latest()->paginate(10);
-
         $cols = collect([
             [
-                'name' => 'Никнейм',
-                'class' => 'w-10',
-                'prop' => 'name'
+                'html' => '<span class="material-symbols-outlined">chart_data</span>',
+                'name' => "Рейтинг",
+                'class' => 'w-5 center',
+                'prop' => 'rating',
+                'default' => '0',
             ],
-//            [
-//                'name' => 'Почта',
-//                'class' => 'w-10',
-//                'prop' => 'email'
-//            ],
+
             [
-                'name' => 'Роли',
-                'class' => 'w-20',
-                'prop' => 'roles'
-            ],
-            [
-                'name' => 'Выдать роль',
-                'class' => 'w-5',
-                'prop' => 'btn',
-                'icon' => 'add_moderator',
-                'endpoint' => route('users.roles.assign', '%s'),
-                'ajax' => true,
+                'name' => "Игры",
+                'class' => 'w-5 center',
+                'prop' => 'games',
+                'default' => '0',
             ],
             [
-                'name' => 'Действия',
-                'class' => 'w-10',
-                'prop' => 'actions',
-                'ajax' => true,
+                'name' => "Турниры",
+                'class' => 'w-5 center',
+                'prop' => 'tournaments',
+                'default' => '0',
             ],
 
         ])->map(fn($item) => (object)$item);
+        $users = User::latest()->paginate(30);
 
-        $sidebarMenu = SuperAdminController::getSidebarMenu('users');
-        return view('users.index', [
-            'sidebarMenu' => $sidebarMenu,
+        return view('players.index', [
+            'cols' => $cols,
             ...compact('users'),
-            'cols' => $cols
         ]);
     }
 
@@ -65,16 +52,12 @@ class UserController extends Controller
      */
     public function create()
     {
-        $this->authorize('super_admin', Role::class);
-        $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.dashboard';
-
         $user = auth()->user();
         $clubSelector = $user->getClubSelector();
         $countrySelector = Country::getCountrySelector();
         $citySelector = City::getCitySelector();
         $sidebarMenu = SuperAdminController::getSidebarMenu('users');
         return view('users.show', [
-            'layout' => $layout,
             'sidebarMenu' => $sidebarMenu,
             'clubSelector' => $clubSelector,
             'countrySelector' => $countrySelector,
@@ -120,14 +103,12 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.dashboard';
         $clubSelector = Club::getClubSelector();
         $citySelector = City::getCitySelector();
         $countrySelector = Country::getCountrySelector();
         $sidebarMenu = SuperAdminController::getSidebarMenu('users');
         return view('users.show', [
             ...compact('user'),
-            'layout' => $layout,
             'sidebarMenu' => $sidebarMenu,
             'clubSelector' => $clubSelector,
             'citySelector' => $citySelector,
@@ -144,7 +125,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.dashboard';
+
         $clubSelector = Club::getClubSelector();
         $citySelector = City::getCitySelector();
         $countrySelector = Country::getCountrySelector();
@@ -153,7 +134,6 @@ class UserController extends Controller
 
         return view('users.show', [
             ...compact('user'),
-            'layout' => $layout,
             'sidebarMenu' => $sidebarMenu,
             'clubSelector' => $clubSelector,
             'citySelector' => $citySelector,
@@ -171,10 +151,8 @@ class UserController extends Controller
         $clubSelector = $user->getClubSelector();
         $countrySelector = Country::getCountrySelector();
         $citySelector = City::getCitySelector();
-        $sidebarMenu = SuperAdminController::getSidebarMenu('users');
 
         return view('users.show', [
-            'sidebarMenu' => $sidebarMenu,
             'clubSelector' => $clubSelector,
             'countrySelector' => $countrySelector,
             'citySelector' => $citySelector,
@@ -273,15 +251,5 @@ class UserController extends Controller
             'noFooter' => true,
             'styles' => ['user-management.css']
         ] );
-    }
-
-    public function searchUsers(Request $request)
-    {
-        $users = User::query()
-            ->where('name', 'like', "%{$request->input('query')}%")
-            ->limit(10)
-            ->get(['id', 'name']);
-
-        return response()->json($users); // Sets Content-Type: application/json
     }
 }

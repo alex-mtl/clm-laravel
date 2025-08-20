@@ -10,7 +10,10 @@ class AuthController extends Controller
 {
 public function showLogin()
 {
-return view('auth.login');
+//    return view('auth.login');
+    return view('auth.register', [
+        'styles' => ['login.css']
+    ]);
 }
 
 public function login(Request $request)
@@ -26,34 +29,43 @@ return back()->withErrors(['email' => 'Invalid credentials'])->withInput();
 
 public function showRegister()
 {
-return view('auth.register');
+    return view('auth.register', [
+        'styles' => ['login.css']
+    ]);
 }
 
 public function register(Request $request)
 {
-$request->validate([
-'name' => 'required|string|max:255',
-'email' => 'required|email|unique:users',
-'password' => 'required|min:6|confirmed',
-]);
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users',
+        'password' => 'required|min:6|confirmed',
+    ]);
 
-User::create([
-'name' => $request->name,
-'email' => $request->email,
-'password' => Hash::make($request->password),
-]);
+    User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+    ]);
 
-return redirect('/login')->with('success', 'Registration successful. You can now login.');
+    return redirect('/login')->with('success', 'Registration successful. You can now login.');
 }
 
-public function dashboard()
-{
-return view('dashboard');
-}
+    public function dashboard()
+    {
+        return view('dashboard', [
+         'styles' => ['dashboard.css']
 
-public function logout()
-{
-Auth::logout();
-return redirect('/');
-}
+        ]);
+    }
+    public function showLogout()
+    {
+        return view('auth.logout');
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+        return redirect('/');
+    }
 }
