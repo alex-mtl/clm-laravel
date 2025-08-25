@@ -3,13 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\City;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use App\Models\Country;
 
 class CityController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware(function ($request, $next) {
+            $this->authorize('super_admin', new Role());
+            return $next($request);
+        });
+    }
     public function index()
     {
+        $sidebarMenu = SuperAdminController::getSidebarMenu('cities');
+
         $cols = collect([
             [
                 'name' => 'Страна',
@@ -24,12 +36,14 @@ class CityController extends Controller
             [
                 'name' => 'Действия',
                 'class' => 'w-10',
-                'prop' => 'actions'
+                'prop' => 'actions',
+                'ajax' => true,
             ],
 
         ])->map(fn($item) => (object)$item);
         return view('cities.index', [
             'cols' => $cols,
+            'sidebarMenu' => $sidebarMenu,
             'cities' => City::latest()->paginate(10)
         ]);
     }

@@ -17,6 +17,7 @@ class UserController extends Controller
      */
     public function index()
     {
+        $this->authorize('super_admin', Role::class);
         $users = User::latest()->paginate(10);
 
         $cols = collect([
@@ -65,7 +66,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        $this->authorize('super_admin', Role::class);
+//        $this->authorize('super_admin', Role::class);
         $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.dashboard';
 
         $user = auth()->user();
@@ -166,7 +167,7 @@ class UserController extends Controller
 
     public function profile()
     {
-
+        $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
         $user = auth()->user();
         $clubSelector = $user->getClubSelector();
         $countrySelector = Country::getCountrySelector();
@@ -178,6 +179,8 @@ class UserController extends Controller
             'clubSelector' => $clubSelector,
             'countrySelector' => $countrySelector,
             'citySelector' => $citySelector,
+            'layout' => $layout,
+            'userListLink' => route('players.index'),
             ...compact('user'),
             'styles' => ['user-show.css'],
             'mode' => 'edit',
@@ -190,6 +193,10 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
 
+        if(!(auth()->user()->isSuperAdmin() || auth()->user()->id == $user->id)) {
+            throw new \Exception('You are not allowed to update this user.');
+        }
+//        dd('update... oops... 199');
 //        dd($request->all());
         $request->merge([
             'club_id' => ($request->club_id == 0 || $request->club_id == 'null' )? null : $request->club_id
@@ -218,8 +225,7 @@ class UserController extends Controller
         }
 
         $user->update($validated);
-
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        return redirect()->route('players.index')->with('success', 'User updated successfully.');
     }
 
     /**

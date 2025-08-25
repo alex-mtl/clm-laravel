@@ -1,0 +1,201 @@
+
+:root {
+    --color-1: #FF9AA2;  /* Soft pink */
+    --color-2: #FFB7B2;  /* Light coral */
+    --color-3: #FFDAC1;  /* Peach */
+    --color-4: #E2F0CB;  /* Mint green */
+    --color-5: #B5EAD7;  /* Aqua */
+    --color-6: #C7CEEA;  /* Lavender */
+    --color-7: #F8B195;  /* Salmon */
+    --color-8: #F67280;  /* Watermelon */
+    --color-9: #C06C84;  /* Dusty rose */
+    --color-10: #6C5B7B; /* Deep purple */
+    --color-11: #355C7D; /* Navy blue */
+    --color-12: #A8E6CE; /* Pale teal */
+    --color-13: #DCEDC2; /* Lime */
+    --color-14: #FFD3B5; /* Apricot */
+    --color-15: #FFAAA6; /* Coral */
+    --color-16: #FF8C94; /* Dark pink */
+}
+.tiles {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+.tile {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+    box-shadow: 4px 4px 20px rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    box-sizing: border-box;
+    color: #fff;
+}
+
+.title-wrapper {
+    border-radius: 1rem;
+    width: 39rem;
+    height: 13rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 1.5rem;
+    box-sizing: border-box;
+    background-color: var(--color-5);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+
+.details-wrapper {
+    width: 37rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 38px;
+    font-size: 14px;
+    padding: 1rem;
+}
+
+.details {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 15px;
+}
+.div {
+    position: relative;
+}
+.component-4 {
+    width: 125px;
+    border-radius: 25px;
+    background-color: #ff9000;
+    height: 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.tournament-name {
+    align-self: stretch;
+    position: relative;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+.tournament-description {
+    align-self: stretch;
+    position: relative;
+    color: #ccc;
+    font-size: 0.8rem;
+}
+.div3 {
+    width: 43px;
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+}
+.mafia-pro {
+    width: 73px;
+    position: relative;
+    color: #fff;
+    text-align: right;
+    display: inline-block;
+    flex-shrink: 0;
+}
+.group {
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0px;
+}
+.detail-label {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.detail-value {
+    position: relative;
+    color: #fff;
+    text-align: right;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.frame-container {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 12px;
+    color: #888;
+}
+
+.view-btn {
+    /*width: 437px;*/
+    border-radius: 8px;
+    background-color: #ff3c3c;
+    /*height: 45px;*/
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 8rem;
+    box-sizing: border-box;
+    --clm-btn-text: #FFF; /* If needed for contrast */
+    --clm-btn-hover: #F67280;
+    --clm-btn-text-hover: black;
+}
+.register-btn {
+    flex: 1;
+    border-radius: 8px;
+    /*background-color: #ff9000;*/
+    /*height: 47px;*/
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 4rem;
+    box-sizing: border-box;
+}
+
+.btn-orange {
+    --clm-btn: #ff9000;
+    --clm-btn-hover: #F67280;
+    --clm-btn-text: #FFF; /* If needed for contrast */
+    --clm-btn-text-hover: black;
+}
+.tournament-buttons-wrapper {
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    text-align: center;
+    font-size: 1rem;
+    line-height: 24px;
+    font-weight: 600;
+}
+
+
+
+.tournament-view {
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+}
+
+.club-avatar-wrapper {
+    width: 7rem;
+    height: 7rem;
+}

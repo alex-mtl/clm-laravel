@@ -14,6 +14,10 @@ class GlobalRoleController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware(function ($request, $next) {
+            $this->authorize('super_admin', new Role());
+            return $next($request);
+        });
     }
 
     // Список ролей для клуба

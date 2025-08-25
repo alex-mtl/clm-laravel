@@ -1,14 +1,11 @@
-{{-- resources/views/dashboard.blade.php --}}
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('content')
+    <div class=" clm-border w-50">
 
-    <h2>Dashboard</h2>
-    <p>Welcome, {{ auth()->user()->name }}!</p>
 
-    <form method="POST" action="{{ route('logout') }}">
-        @csrf
-        <button type="submit">Logout</button>
-    </form>
 
+    </div>
 @endsection
+
+

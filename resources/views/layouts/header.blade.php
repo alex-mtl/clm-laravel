@@ -6,34 +6,56 @@
     </span>
 
     <nav class="main-nav">
+        <span class="menu-item {{ request()->is('clubs*') ? 'active' : '' }}">
         <a href="/clubs">{{__('clm.clubs')}}</a>
-        <a href="#">Item 2</a>
-        <a href="#">Item 3</a>
+        </span>
+        <span class="menu-item {{ request()->is('players*') ? 'active' : '' }}">
+        <a href="/players ">{{__('clm.users')}}</a>
+        </span>
+        <span class="menu-item {{ request()->is('tournaments*') ? 'active' : '' }}">
+            <a href="/tournaments">Турниры </a>
+        </span>
     </nav>
 
     @if (Route::has('login'))
         <nav class="action-buttons">
             @auth
+
                 <a
-                        href="{{ url('/dashboard') }}"
-                        class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] border-[#19140035] hover:border-[#1915014a] border text-[#1b1b18] dark:border-[#3E3E3A] dark:hover:border-[#62605b] rounded-sm text-sm leading-normal"
+{{--                        href="{{ url('/dashboard') }}"--}}
+                        class=""
+                        id="user-menu"
                 >
                     Dashboard
                 </a>
-            @else
-                @if (!request()->is('login'))
-                    <a href="{{ route('login') }}" class="btn btn-login">
-                        {{ __('clm.loginBtn') }}
-                    </a>
-                @endif
 
-                @if (Route::has('register'))
-                    <a
-                            href="{{ route('register') }}"
-                            class="btn btn-register">
-                        {{ __('clm.registerBtn') }}
-                    </a>
-                @endif
+                <x-dropdown-menu
+                    name="user-menu"
+                    :menu-owner-id="'user-menu'"
+                    :menu-items="$menuItems"
+                    selected="self"
+
+                />
+            @else
+                <span class="login">
+                <a href="{{ route('login') }}" class="">
+{{--                    {{ __('clm.loginBtn') }}--}}
+                    <img src="/img/login.svg" alt="Login">
+                </a>
+                </span>
+{{--                @if (!request()->is('login'))--}}
+{{--                    <a href="{{ route('login') }}" class="btn btn-login">--}}
+{{--                        {{ __('clm.loginBtn') }}--}}
+{{--                    </a>--}}
+{{--                @endif--}}
+
+{{--                @if (Route::has('register'))--}}
+{{--                    <a--}}
+{{--                            href="{{ route('register') }}"--}}
+{{--                            class="btn btn-register">--}}
+{{--                        {{ __('clm.registerBtn') }}--}}
+{{--                    </a>--}}
+{{--                @endif--}}
             @endauth
 
             @include('layouts.langmenu')

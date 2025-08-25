@@ -31,12 +31,18 @@ class GamePagesController extends Controller
             ];
         }
 
+        $speakerOptions =[];
+        foreach ($slots as $slotKey => $slotData) {
+            $speakerOptions[$slotKey] = $slotKey.' : '. $slotData['name'] ?? 'Unknown';
+        }
+
         $citySelector = City::getCitySelector();
 //        dd($slots);
         return view('games.host', [
             'game' => $game,
             'slots' => $slots,
             'gameRoles' => $gameRoles,
+            'speakerOptions' => $speakerOptions,
             'citySelector' => $citySelector,
             'styles' => ['game-host.css'],
             'scripts' => ['game-host.js'],

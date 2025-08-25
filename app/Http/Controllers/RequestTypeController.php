@@ -3,11 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\RequestType;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class RequestTypeController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware(function ($request, $next) {
+            $this->authorize('super_admin', new Role());
+            return $next($request);
+        });
+    }
     /**
      * Display a listing of request types.
      */
@@ -31,9 +40,10 @@ class RequestTypeController extends Controller
                 'prop' => 'actions'
             ],
         ])->map(fn($item) => (object)$item);
-
+        $sidebarMenu = SuperAdminController::getSidebarMenu('request-types');
         return view('request-types.index', [
             'cols' => $cols,
+            'sidebarMenu' => $sidebarMenu,
             'requestTypes' => RequestType::orderBy('name')->get()
         ]);
     }

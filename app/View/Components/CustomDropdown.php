@@ -5,6 +5,7 @@ namespace App\View\Components;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use Illuminate\Support\Str;
 
 class CustomDropdown extends Component
 {
@@ -16,9 +17,12 @@ class CustomDropdown extends Component
     public $selected;
     public $label;
     public $readonly;
+    public $invisible;
     public $class;
+    public $btnid;
+    public $callback;
 
-    public function __construct($name, $options = [], $selected = null, $label = '', $readonly = false, $class = null)
+    public function __construct($name, $options = [], $selected = null, $label = '', $readonly = false, $class = null, $invisible = 'false', $btnid = null, $callback = null)
     {
         $this->name = $name;
         $this->options = $options;
@@ -26,6 +30,9 @@ class CustomDropdown extends Component
         $this->label = $label;
         $this->readonly = $readonly;
         $this->class = $class;
+        $this->invisible = $invisible;
+        $this->btnid = $btnid ?? Str::random(8);
+        $this->callback = $callback;
     }
 
     public function render()

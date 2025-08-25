@@ -1,0 +1,17 @@
+
+
+.club-avatar  img{
+    height: 10rem;
+    width: 10rem;
+    width: auto;
+    object-fit: contain;
+    min-width: 0;
+    border-radius: 1rem;
+    border: none;
+    margin: 0.2rem;
+}
+
+
+
+
+

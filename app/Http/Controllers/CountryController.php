@@ -3,10 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Country;
+use App\Models\Role;
 use Illuminate\Http\Request;
 
 class CountryController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware(function ($request, $next) {
+            $this->authorize('super_admin', new Role());
+            return $next($request);
+        });
+    }
     public function index()
     {
         $cols = collect([
@@ -28,8 +37,10 @@ class CountryController extends Controller
 
         ])->map(fn($item) => (object)$item);
 
+        $sidebarMenu = SuperAdminController::getSidebarMenu('countries');
         return view('countries.index', [
             'cols' => $cols,
+            'sidebarMenu' => $sidebarMenu,
             'countries' => Country::latest()->paginate(10)
         ]);
     }

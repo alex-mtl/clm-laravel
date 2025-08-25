@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Tournament extends Model
 {
     use HasFactory;
-    const phases = [
+    const PHASES = [
+        'draft' => 'Черновик',
         'registration' => 'Регистрация',
         'qualifying' => 'Квалификация',
         'finals' => 'Финалы',

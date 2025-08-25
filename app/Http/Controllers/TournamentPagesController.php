@@ -20,6 +20,8 @@ class TournamentPagesController extends Controller
 
     public function __construct()
     {
+        $this->middleware('auth');
+
         $this->sidebarMenu = collect([
             [
                 'icon' => 'info',
@@ -75,7 +77,9 @@ class TournamentPagesController extends Controller
 
     public function index()
     {
-        $tournaments = Tournament::with('club')->orderBy('date_start', 'desc')->paginate(10);
+        $tournaments = Tournament::with('club')
+            ->where('phase', '!=', 'draft')
+            ->orderBy('date_start', 'desc')->paginate(10);
         return view('tournaments.index', [
             'tournaments' => $tournaments,
             'styles' => ['tournaments.css'],
@@ -89,14 +93,6 @@ class TournamentPagesController extends Controller
         $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
 
         $tournamentInfo = $tournament->getTournamentInfo();
-
-//        $judges = $tournament->judges()->with('user')->get();//->pluck('users.name','users.id');
-////        $judges = $tournament->judges()->with('user')->get()->pluck('user');
-////        $judges = $tournament->judges()->get();
-//
-////        $jusers = $judges->pluck('user');
-//        dd($judges);
-
 
         $judgesCols = collect([
             [
@@ -143,6 +139,7 @@ class TournamentPagesController extends Controller
 
     public function judgeCreate(Tournament $tournament)
     {
+
         $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
         if ($judgeRole = Role::where('slug', 'judge')->first()) {
             $judges = $judgeRole->users->pluck('name', 'id');

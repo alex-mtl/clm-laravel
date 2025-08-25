@@ -1,0 +1,673 @@
+.clubs-parent {
+    max-width: 1341px;
+    display: flex;
+    /*align-items: center;*/
+    /*justify-content: flex-start;*/
+    gap: 20px;
+    /*font-size: 40px;*/
+    /*padding-bottom: clamp(5px, 1.25vw, 20px);*/
+    /*padding-top: clamp(5px, 1.25vw, 20px);*/
+}
+
+.clubs-parent {
+
+
+
+    & .div {
+        width: 95px;
+        position: relative;
+        font-weight: 600;
+        color: #fff;
+        text-align: left;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    & .div1 {
+        position: relative;
+        font-weight: 600;
+    }
+
+    & .auto-layout-horizontal1 {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    & .auto-layout-horizontal3 {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        text-align: left;
+    }
+
+    & .div4 {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        font-weight: 600;
+    }
+
+    & .group {
+        width: 53px;
+        position: relative;
+        height: 24px;
+    }
+
+
+    & .auto-layout-horizontal {
+        position: absolute;
+        top: 29px;
+        left: calc(50% - 394px);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 28px;
+    }
+
+    & .frame-child {
+        width: 65px;
+        position: relative;
+        height: 65px;
+        object-fit: cover;
+    }
+
+    & .vector-icon {
+        width: 50px;
+        position: relative;
+        height: 50px;
+    }
+
+    & .group-parent {
+        position: absolute;
+        top: 10px;
+        left: 1265px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 15px;
+    }
+
+    & .b {
+        align-self: stretch;
+        position: relative;
+        text-align: left;
+    }
+
+    & .div7 {
+        align-self: stretch;
+        position: relative;
+        font-size: 16px;
+        color: #ccc;
+    }
+
+    & .div8 {
+        position: relative;
+        line-height: 28px;
+        font-weight: 600;
+    }
+
+    & .auto-layout-horizontal5 {
+        max-width: 1107px;
+        border-radius: 8px;
+        background-color: #444;
+        height: 65px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 18px 20px;
+        box-sizing: border-box;
+    }
+
+    & .vector-icon1 {
+        width: 12px;
+        position: relative;
+        height: 6px;
+    }
+
+    & .auto-layout-horizontal7 {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    & .auto-layout-horizontal6 {
+        width: 208px;
+        border-radius: 8px;
+        background-color: #444;
+        border: 1px solid #333;
+        box-sizing: border-box;
+        height: 67px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        padding: 18px 9px;
+    }
+
+    & .search {
+        /*align-self: stretch;*/
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2vw;
+        font-size: 18px;
+    }
+
+    & .image-icon {
+        width: 65px;
+        position: relative;
+        border-radius: 8px;
+        height: 65px;
+        object-fit: cover;
+    }
+
+    & .club-name {
+        align-self: stretch;
+        position: relative;
+        font-weight: 600;
+        text-align: left;
+    }
+
+    & .club-rate {
+        align-self: stretch;
+        position: relative;
+        font-weight: 600;
+        text-align: right;
+    }
+
+    & .club-city {
+        position: relative;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    & .div11 {
+        width: 10px;
+        position: relative;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    & .div12 {
+        width: 162px;
+        position: relative;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    & .container {
+        align-self: stretch;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 5px;
+        font-size: 16px;
+        color: #ccc;
+    }
+
+    & .mafia-masters-parent {
+        width: 251px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 8px;
+    }
+
+    & .image-parent {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 15px;
+    }
+
+    & .rating-label {
+        align-self: stretch;
+        position: relative;
+        font-size: 16px;
+        color: #888;
+    }
+
+    & .frame-div {
+        width: 73px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 6px;
+        text-align: right;
+    }
+
+    & .frame-container {
+        max-width: 947px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0px;
+    }
+
+    & .div15 {
+        position: relative;
+        line-height: 24px;
+        font-weight: 600;
+    }
+
+    & .wrapper {
+        width: 118px;
+        border-radius: 8px;
+        background-color: #ff9000;
+        height: 41px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 22px;
+        box-sizing: border-box;
+    }
+
+    & .btn {
+        width: 133px;
+        border-radius: 8px;
+        background-color: #444;
+        height: 41px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 21px;
+        box-sizing: border-box;
+    }
+
+    & .btn:hover {
+        background-color: var(--clm-red);
+        cursor: pointer;
+    }
+
+    & .frame-parent1 {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 12px;
+        text-align: center;
+        font-size: 16px;
+    }
+
+    & .frame-group {
+        max-width: 1281px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 2vw;
+    }
+
+    & .club-row {
+        /*align-self: stretch;*/
+        border-radius: 1rem;
+        background-color: #1a1a1a;
+        border: 1px solid #333;
+        box-sizing: border-box;
+        height: 133px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 24px;
+    }
+
+    & .div19 {
+        width: 165px;
+        position: relative;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    & .golden-eagles-parent {
+        width: 309px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 8px;
+    }
+
+    & .parent2 {
+        width: 74px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 6px;
+        text-align: right;
+    }
+
+    & .frame-parent3 {
+        width: 948px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0px;
+    }
+
+    & .wrapper1 {
+        width: 118px;
+        border-radius: 8px;
+        background-color: #ff3c3c;
+        height: 41px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 21px;
+        box-sizing: border-box;
+    }
+
+    & .frame-parent4 {
+        width: 263px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0px;
+        text-align: center;
+        font-size: 16px;
+    }
+
+    & .b1 {
+
+        position: relative;
+        display: inline-block;
+        text-align: left;
+
+    }
+
+    & .div24 {
+        width: 652px;
+        position: relative;
+        font-size: 16px;
+        color: #ccc;
+        display: inline-block;
+    }
+
+    & .wrapper3 {
+        width: 189px;
+        border-radius: 8px;
+        background-color: var(--clm-button-red);
+        height: 54px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        padding: 11px 32px;
+        box-sizing: border-box;
+    }
+
+    & .wrapper4 {
+        width: 201px;
+        border-radius: 8px;
+        background-color: #444;
+        height: 54px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        padding: 11px 31px;
+        box-sizing: border-box;
+    }
+
+    & .frame-parent5 {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 15px;
+        text-align: center;
+        font-size: 18px;
+    }
+
+    & .parent3 {
+        align-self: stretch;
+        border-radius: 1rem;
+        background-color: #1a1a1a;
+        border: 1px solid #333;
+        box-sizing: border-box;
+        height: 246px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 24px;
+        gap: 30px;
+        font-size: 24px;
+    }
+
+    & .frame-parent {
+        /*align-self: stretch;*/
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 20px;
+        font-size: 20px;
+    }
+
+    & .rectangle2 {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        background-color: #ff3c3c;
+        width: 1440px;
+        height: 313px;
+    }
+
+    & .group2 {
+        width: 1440px;
+        position: absolute;
+        margin: 0 !important;
+        top: 0px;
+        left: 0px;
+        height: 313px;
+        z-index: 0;
+    }
+
+    & .frame-item {
+        width: 50px;
+        position: relative;
+        height: 50px;
+        object-fit: contain;
+    }
+
+    & .div27 {
+        width: 348px;
+        position: relative;
+        display: inline-block;
+        height: 87px;
+        flex-shrink: 0;
+    }
+
+    & .group-container {
+        align-self: stretch;
+        height: 147px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 10px;
+    }
+
+    & .clm-mafia-platform {
+        align-self: stretch;
+        position: relative;
+    }
+
+    & .frame-parent8 {
+        width: 431px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 88px;
+    }
+
+    & .div28 {
+        position: relative;
+        font-size: 18px;
+        line-height: 28px;
+        font-weight: 600;
+    }
+
+    & .div29 {
+        width: 104px;
+        position: relative;
+        display: inline-block;
+    }
+
+    & .auto-layout-vertical2 {
+        width: 107px;
+        height: 170px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 10px;
+    }
+
+    & .frame-parent7 {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 22px;
+    }
+
+    & .span {
+        font-weight: 600;
+        font-family: Inter;
+    }
+
+    & .p {
+        margin: 0;
+    }
+
+    & .p2 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    & .email-container {
+        position: relative;
+    }
+
+    & .rectangle3 {
+        position: absolute;
+        top: calc(50% - 23px);
+        left: calc(50% - 216px);
+        border-radius: 8px;
+        background-color: #fff;
+        width: 432px;
+        height: 46px;
+    }
+
+    & .div34 {
+        position: absolute;
+        top: calc(50% - 14px);
+        left: calc(50% + 96px);
+        line-height: 28px;
+        font-weight: 600;
+    }
+
+    & .email1 {
+        position: absolute;
+        top: calc(50% - 8px);
+        left: calc(50% - 200px);
+        font-size: 16px;
+        color: #0d0d0d;
+        display: inline-block;
+        width: 173px;
+        height: 16.2px;
+    }
+
+    & .line {
+        position: absolute;
+        top: calc(50% - 23.5px);
+        left: calc(50% + 72.5px);
+        border-right: 1px solid #252525;
+        box-sizing: border-box;
+        width: 1px;
+        height: 47px;
+    }
+
+    & .group3 {
+        width: 432px;
+        position: relative;
+        height: 46px;
+        font-size: 18px;
+        color: #252525;
+    }
+
+    & .email-parent {
+        align-self: stretch;
+        height: 189px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 29px;
+    }
+
+    & .frame-inner {
+        width: 177.6px;
+        position: relative;
+        height: 36px;
+    }
+
+    & .frame-parent9 {
+        width: 431px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 29px;
+    }
+
+    & .frame-parent6 {
+        width: 1338px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0px;
+        z-index: 1;
+    }
+
+    & .group-group {
+        position: absolute;
+        bottom: 0px;
+        left: calc(50% - 720px);
+        width: 1440px;
+        height: 313px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        padding: 27px 50px;
+        box-sizing: border-box;
+        gap: 10px;
+        font-size: 16px;
+    }
+
+}

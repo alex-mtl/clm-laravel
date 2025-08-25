@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
     <h1>Create New Club</h1>
 
     <form action="{{ route('clubs.store') }}" method="POST">

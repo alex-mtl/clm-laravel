@@ -43,6 +43,14 @@ return [
             'root' => storage_path('app/public'),
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
+            'directories' => [
+                'required' => [
+                    'avatars',
+                    'club/avatar',
+                    'club/logo',
+                    'club/banner',
+                ],
+            ],
             'throw' => false,
             'report' => false,
         ],

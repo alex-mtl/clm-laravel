@@ -34,7 +34,11 @@ class User extends Authenticatable
         'last_name',
         'phone_number',
         'club_id',
-        'telegram'
+        'telegram',
+        'is_active',
+        'email_verified_at',
+        'email_verification_token',
+        'google_id',
     ];
 
     /**
@@ -46,6 +50,8 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    protected $isSuperAdmin = null;
 
     /**
      * Get the attributes that should be cast.
@@ -130,8 +136,8 @@ class User extends Authenticatable
             ->when($clubId, function($query) use ($clubId) {
                 // Для клубных ролей проверяем привязку к клубу
                 $query->where(function($q) use ($clubId) {
-                    $q->where('scope', 'global')
-                        ->orWhere('club_id', $clubId);
+                    $q->where('roles.scope', 'global')
+                        ->orWhere('roles.club_id', $clubId);
                 });
             })
             ->exists();
@@ -140,7 +146,11 @@ class User extends Authenticatable
     // Проверка на супер-админа
     public function isSuperAdmin()
     {
-        return $this->hasGlobalRole('super_admin');
+        if ($this->isSuperAdmin === null) {
+            $this->isSuperAdmin = $this->hasGlobalRole('super_admin');
+        }
+
+        return $this->isSuperAdmin;
     }
 
     // Проверка на администратора
@@ -214,4 +224,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Game::class, 'judge_id');
     }
+
+    public function getNavLinks() {
+        return [
+            'self' => ['label' =>'Профиль', 'link' => '/users/profile'],
+            'dashboard' => ['label'=>'Управление', 'link'=>'/dashboard'],
+            'logout' => ['label' => 'Выйти', 'link' => '/logout'],
+        ];
+    }
+
 }

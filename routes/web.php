@@ -1,9 +1,28 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ClubController;
+use App\Http\Controllers\ClubMembershipController;
+use App\Http\Controllers\CountryController;
+use App\Http\Controllers\CityController;
+use App\Http\Controllers\ClubMemberController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\GlobalRoleController;
+use App\Http\Controllers\GameController;
+use App\Http\Controllers\GameParticipantController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\TournamentController;
+use App\Http\Controllers\TournamentParticipantController;
+use App\Http\Controllers\TournamentPagesController;
+use App\Http\Controllers\RequestTypeController;
+use App\Http\Controllers\SuperAdminController;
+use App\Http\Controllers\PlayerPagesController;
+use App\Http\Controllers\GamePagesController;
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -11,11 +30,61 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
-Route::get('/dashboard', [AuthController::class, 'dashboard'])->middleware('auth');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/verify-email/{token}', function ($token) {
+    $user = User::where('email_verification_token', $token)->first();
 
-Route::resource('users', UserController::class)->middleware('auth');
+    if (!$user) {
+        return redirect('/login')->with('error', 'Invalid verification token.');
+    }
+
+    $user->update([
+        'is_active' => true,
+        'email_verified_at' => now(),
+        'email_verification_token' => null,
+    ]);
+
+    Auth::login($user);
+
+    return redirect('/dashboard')->with('success', 'Email verified successfully!');
+})->name('verify.email');
+
+
+Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
+
+Route::get('/auth/facebook', [AuthController::class, 'redirectToFacebook'])->name('auth.facebook');
+Route::get('/auth/facebook/callback', [AuthController::class, 'handleFacebookCallback']);
+
+Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])
+    ->middleware('auth')
+    ->name('dashboard');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/logout', [AuthController::class, 'showLogout'])
+    ->middleware('auth')
+    ->name('logout.form');
+
+Route::get('/users/management', [UserController::class, 'management'])
+    ->middleware('auth')
+    ->name('user.management');
+
+Route::get('/users/profile', [UserController::class, 'profile'])
+    ->middleware('auth')
+    ->name('user.profile');
+
+Route::get('/users/search', [UserController::class, 'searchUsers'])
+    ->name('users.search');
+Route::resource('users', UserController::class)->middleware('auth')->except(['searchUsers']);
 Route::resource('clubs', ClubController::class)->middleware('auth');
+Route::resource('countries', CountryController::class)->middleware('auth');
+Route::resource('cities', CityController::class)->middleware('auth');
+Route::resource('roles', GlobalRoleController::class)->middleware('auth');
+
+Route::get('/users/{user}/role', [GlobalRoleController::class, 'assignRoleForm'])
+    ->name('users.roles.assign');
+
+Route::post('/users/{user}/role', [GlobalRoleController::class, 'assignRole'])
+    ->name('users.roles.store');
+
 
 Route::get('/set-locale/{locale}', function ($locale) {
     if (in_array($locale, ['en', 'ru'])) {
@@ -28,3 +97,153 @@ Route::get('/set-locale/{locale}', function ($locale) {
 Route::get('/', function () {
     return view('pages.home');
 });
+
+
+Route::middleware('auth')->group(function () {
+    // Membership routes
+    Route::post('/clubs/{club}/join', [ClubMembershipController::class, 'requestJoin'])
+        ->name('clubs.join.request');
+
+    Route::post('/join-requests/{joinRequest}/approve', [ClubMembershipController::class, 'approveRequest'])
+        ->name('join-requests.approve');
+
+    Route::post('/clubs/{club}/leave', [ClubMembershipController::class, 'leave'])
+        ->name('clubs.leave');
+
+    Route::post('/join-requests/{joinRequest}/decline', [ClubMembershipController::class, 'declineRequest'])
+        ->name('join-requests.decline');
+
+});
+
+
+// Группа маршрутов для управления клубами
+Route::prefix('clubs/{club}')->middleware(['auth'])->group(function() {
+    // Управление ролями
+    Route::prefix('roles')->group(function() {
+        Route::get('/', [RoleController::class, 'index'])->name('clubs.roles.index');
+        Route::get('/create', [RoleController::class, 'create'])->name('clubs.roles.create');
+        Route::get('/{role}', [RoleController::class, 'show'])->name('clubs.roles.show');
+        Route::get('/{role}/edit', [RoleController::class, 'edit'])->name('clubs.roles.edit');
+        Route::delete('/{role}', [RoleController::class, 'destroy'])->name('clubs.roles.destroy');
+        Route::post('/', [RoleController::class, 'store'])->name('clubs.roles.store');
+        Route::put('/{role}', [RoleController::class, 'update'])->name('clubs.roles.update');
+        Route::post('/assign', [RoleController::class, 'assignRole'])->name('clubs.roles.assign');
+        Route::put('/{role}/permissions', [RoleController::class, 'updatePermissions'])->name('clubs.roles.update_permissions');
+        Route::delete('/{user}/{role}', [RoleController::class, 'revokeRole'])->name('clubs.roles.revoke');
+    });
+
+    // Управление участниками
+    Route::prefix('members')->group(function() {
+        Route::get('/', [ClubMemberController::class, 'index'])->name('clubs.members.index');
+        Route::post('/', [ClubMemberController::class, 'store'])->name('clubs.members.store');
+        Route::delete('/{user}', [ClubMemberController::class, 'destroy'])->name('clubs.members.destroy');
+    });
+});
+
+Route::prefix('clubs/{club}')->group(function () {
+    Route::resource('events', EventController::class)->names([
+        'index' => 'clubs.events.index',
+        'create' => 'clubs.events.create',
+        'store' => 'clubs.events.store',
+        'show' => 'clubs.events.show',
+        'edit' => 'clubs.events.edit',
+        'update' => 'clubs.events.update',
+        'destroy' => 'clubs.events.destroy'
+    ]);
+});
+
+Route::resource('request-types', RequestTypeController::class)
+    ->middleware('auth'); // Add auth protection
+
+Route::prefix('clubs/{club}')->group(function () {
+    Route::resource('tournaments', TournamentController::class)->names([
+        'index' => 'clubs.tournaments.index',
+        'create' => 'clubs.tournaments.create',
+        'store' => 'clubs.tournaments.store',
+        'show' => 'clubs.tournaments.show',
+        'edit' => 'clubs.tournaments.edit',
+        'update' => 'clubs.tournaments.update',
+        'destroy' => 'clubs.tournaments.destroy'
+    ]);
+});
+
+
+Route::prefix('tournaments/{tournament}')->group(function () {
+    Route::resource('participants', TournamentParticipantController::class)
+        ->only(['index', 'create', 'store', 'destroy']);
+});
+
+Route::prefix('events/{event}')->group(function () {
+    Route::resource('games', GameController::class);
+
+    Route::prefix('games/{game}')->group(function () {
+        Route::resource('participants', GameParticipantController::class)
+            ->except(['show']);
+    });
+});
+
+Route::get('/tournaments', [TournamentPagesController::class, 'index'])
+    ->name('tournaments.index');
+
+Route::get('/tournaments/{tournament}', [TournamentPagesController::class, 'show'])
+    ->name('tournaments.show');
+Route::get('/tournaments/{tournament}/requests/create', [TournamentPagesController::class, 'applicationForm'])
+    ->name('tournaments.requests.create');
+Route::post('/tournaments/{tournament}/requests', [TournamentPagesController::class, 'applicationStore'])
+    ->name('tournaments.requests.store');
+
+Route::post('/tournaments/{tournament}/requests/{request}/approve', [TournamentPagesController::class, 'applicationApprove'])
+    ->name('tournaments.requests.approve');
+Route::post('/tournaments/{tournament}/requests/{request}/decline', [TournamentPagesController::class, 'applicationDecline'])
+    ->name('tournaments.requests.decline');
+
+
+Route::get('/tournaments/{tournament}/judges/create', [TournamentPagesController::class, 'judgeCreate'])
+    ->name('tournaments.judges.create');
+Route::post('/tournaments/{tournament}/judges', [TournamentPagesController::class, 'judgeStore'])
+    ->name('tournaments.judges.store');
+
+Route::get('/tournaments/{tournament}/games/wizard', [TournamentPagesController::class, 'wizardForm'])
+    ->name('tournaments.games.wizard');
+
+Route::put('/tournaments/{tournament}/games/wizard', [TournamentPagesController::class, 'eventsUpdate'])
+    ->name('tournaments.events.update');
+
+
+Route::get('/players', [PlayerPagesController::class, 'index'])
+    ->name('players.index');
+
+Route::get('/games/{game}/host', [GamePagesController::class, 'host'])
+    ->name('games.host');
+
+Route::post('/games/{game}/host', [GamePagesController::class, 'update'])
+    ->name('games.update');
+
+Route::post('/games/{game}/phase', [GamePagesController::class, 'phase'])
+    ->name('games.phase');
+
+
+Route::get('/games/{game}/slots/{slot}/eliminate', [GamePagesController::class, 'eliminateForm'])
+    ->name('games.slots.eliminateForm');
+
+Route::post('/games/{game}/slots/{slot}/eliminate', [GamePagesController::class, 'eliminate'])
+    ->name('games.slots.eliminate');
+
+Route::get('/games/{game}/slots/{slot}/restore', [GamePagesController::class, 'restoreForm'])
+    ->name('games.slots.restoreForm');
+
+Route::post('/games/{game}/slots/{slot}/restore', [GamePagesController::class, 'restore'])
+    ->name('games.slots.restore');
+
+Route::get('/games/{game}/host/reset-timer', [GamePagesController::class, 'resetTimerForm'])
+    ->name('games.host.resetTimerForm');
+
+Route::get('/test-email', function () {
+    Mail::raw('Test email content', function ($message) {
+        $message->to('kim.alexander.ca@gmail.com')
+            ->subject('Test from Laravel');
+    });
+
+    return 'Email sent!';
+});
+

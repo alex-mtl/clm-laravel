@@ -9,12 +9,16 @@ use Carbon\Carbon;
 
 class TournamentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     protected function rules(?Tournament $tournament = null): array
     {
         return [
             'club_id' => 'nullable|exists:clubs,id',
             'name' => 'required|string|max:255',
-            'date_start' => 'required|date|after_or_equal:today',
+            'date_start' => 'required|date',
             'date_end' => 'required|date|after_or_equal:date_start',
             'location' => 'nullable|string|max:255',
             'duration' => 'nullable|integer|min:1',
@@ -45,6 +49,7 @@ class TournamentController extends Controller
 
         // Create new tournament with default dates
         $tournament = new Tournament([
+            'phase' => 'draft',
             'date_start' => $nextFriday,
             'date_end' => $nextSunday
         ]);
@@ -54,6 +59,7 @@ class TournamentController extends Controller
             'mode' => 'create',
             'club' => $club,
             'tournament' => $tournament,
+            'tournamentPhases' => Tournament::PHASES,
         ]);
     }
 
@@ -100,7 +106,8 @@ class TournamentController extends Controller
             'layout' => $layout,
             'mode' => 'show',
             'club' => $club,
-            'tournament' => $tournament
+            'tournament' => $tournament,
+            'tournamentPhases' => Tournament::PHASES,
         ]);
     }
 
@@ -113,7 +120,8 @@ class TournamentController extends Controller
             'layout' => $layout,
             'tournament' => $tournament,
             'mode' => 'edit',
-            'club' => $club
+            'club' => $club,
+            'tournamentPhases' => Tournament::PHASES,
 
         ]);
     }
@@ -135,7 +143,8 @@ class TournamentController extends Controller
             }
         }
 
-        $validated['duration'] = $validated['date_start']->diffInDays($validated['date_end']) + 1;
+        $validated['duration'] = \Carbon\Carbon::parse($validated['date_start'])
+                ->diffInDays(\Carbon\Carbon::parse($validated['date_end'])) + 1;
 
         $tournament->update($validated);
 
