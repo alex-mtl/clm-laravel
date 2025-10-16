@@ -24,7 +24,7 @@ class SuperAdminController extends Controller
         [
             'name' => 'Клубы',
             'action' => 'clubs',
-            'handler' => 'window.location.href = "/clubs";',
+            'handler' => 'window.location.href = "/manage/clubs";',
             'active' => false,
         ],
 

@@ -17,14 +17,20 @@ class ClubMemberController extends Controller
     // Список участников клуба
     public function index(Club $club)
     {
-
         $this->authorize('manage_club_members', $club);
+        $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
 
         $members = $club->members()->with('roles')->get();
         $availableRoles = $club->roles()->get();
         $globalRoles = Role::where('scope', 'global')->get();
 
-        return view('clubs.members.index', compact('club', 'members', 'availableRoles', 'globalRoles'));
+        return view('clubs.members.index', [
+            'club' => $club,
+            'members' => $members,
+            'availableRoles' => $availableRoles,
+            'globalRoles' => $globalRoles,
+            'layout' => $layout,
+        ]);
     }
 
     // Добавление участника в клуб
@@ -52,6 +58,19 @@ class ClubMemberController extends Controller
         return redirect()->back()->with('success', 'Пользователь успешно добавлен');
     }
 
+
+    public function removeForm(Club $club, User $user)
+    {
+        $this->authorize('manage_club_members', $club);
+        $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
+
+        return view('clubs.members.remove-confirmation-form', [
+            'club' => $club,
+            'layout' => $layout,
+            'mode' => 'show',
+            'user' => $user,
+        ]);
+    }
     // Удаление участника из клуба
     public function destroy(Club $club, User $user)
     {
@@ -59,6 +78,9 @@ class ClubMemberController extends Controller
 
         // Отзываем все роли клуба у пользователя
         $user->roles()->wherePivot('club_id', $club->id)->detach();
+
+        // Удаляем пользователя из клуба
+        $club->members()->detach($user);
 
         return redirect()->back()->with('success', 'Пользователь удален из клуба');
     }

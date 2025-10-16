@@ -8,7 +8,8 @@
 
          // Search users
          search() {
-             if (this.query.length < 2) {
+            const searchQuery = this.query || '';
+             if (searchQuery.length < 2) {
                  this.results = [];
                  return;
              }
@@ -39,7 +40,8 @@
      }"
 >
     <!-- Hidden input for form submission -->
-    <input type="hidden" name="{{ $name }}" x-model="selected ? selected.id : ''">
+{{--    <input type="hidden" name="{{ $name }}" x-model="selected ? selected.id : ''">--}}
+    <input type="hidden" name="{{ $name }}" :value="selected ? selected.id : ''">
 
     <!-- Visible label -->
 
@@ -53,11 +55,11 @@
             type="text"
             x-model="query"
             @input.debounce.300ms="search"
-            @focus="query.length >= 2 && (open = true)"
+            @focus="(query || '').length >= 2 && (open = true)"
             @keydown.escape="open = false"
             placeholder="{{ $placeholder ?? 'Search users...' }}"
             class="styled-input"
-            x-init="if (selected) query = selected.name"
+            x-init="if (selected) query = selected.name || ''"
         >
         <template x-if="loading">
             <span class="loading-indicator">...</span>

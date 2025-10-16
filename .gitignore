@@ -61,3 +61,4 @@ yarn-error.log
 # Laravel specific
 .phpstorm.meta.php
 _ide_helper.php
+/.env.production

@@ -17,6 +17,7 @@ class EventController extends Controller
 
     public function create(Club $club)
     {
+        $this->authorize('manage_club', $club);
         $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
         $clubs = Club::all();
 
@@ -30,23 +31,33 @@ class EventController extends Controller
             'tournaments' => $tournaments,
             'layout' => $layout,
             'mode' => 'create',
-            'event' => new Event()
+            'event' => new Event([ 'date_start' => now(), 'date_end' => now() ])
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, Club $club)
     {
+        $this->authorize('manage_club', $club);
+        $request->merge([
+            'tournament_id' => $request->tournament_id === 'null' ? null : $request->tournament_id
+        ]);
         $validated = $request->validate([
             'club_id' => 'sometimes|exists:clubs,id',
             'tournament_id' => 'nullable|exists:tournaments,id',
             'name' => 'required|string|max:255',
-            'date' => 'required|date',
+            'date_start' => 'required|date',
+            'date_end' => 'required|date',
             'description' => 'nullable|string',
             'logo' => 'nullable|image'
         ]);
 
-        if (!isset($validated['club_id']) && $request->route('club')) {
-            $validated['club_id'] = $request->route('club');
+//        if (!isset($validated['club_id']) && $request->route('club')) {
+        if (!isset($validated['club_id']) ) {
+            $validated['club_id'] = $club->id;
+        }
+
+        if(isset($validated['tournament_id']) && $validated['tournament_id'] == 'null') {
+            $validated['tournament_id'] = null;
         }
 
         if ($request->hasFile('logo')) {
@@ -63,6 +74,7 @@ class EventController extends Controller
 
     public function show(Club $club, Event $event)
     {
+        $this->authorize('manage_club', $club);
         $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
 
         $tournaments = Tournament::all()->prepend(
@@ -82,6 +94,7 @@ class EventController extends Controller
 
     public function edit(Club $club, Event $event)
     {
+        $this->authorize('manage_club', $club);
         $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
 
         $clubs = Club::all();
@@ -104,6 +117,7 @@ class EventController extends Controller
 
     public function update(Request $request, Club $club, Event $event)
     {
+        $this->authorize('manage_club', $club);
         $validated = $request->validate([
             'club_id' => 'sometimes|exists:clubs,id',
             'tournament_id' => 'nullable|exists:tournaments,id',
@@ -129,9 +143,14 @@ class EventController extends Controller
             ->with('tab', 'events');
     }
 
-    public function destroy(Event $event)
+    public function destroy(Club $club, Event $event)
     {
+        $this->authorize('manage_club', $club);
         $event->delete();
-        return redirect()->route('events.index')->with('success', 'Event deleted successfully.');
+//        return redirect()->route('clubs.events.index', $club)->with('success', 'Event deleted successfully.');
+
+        return redirect()->route('clubs.show', $club)
+            ->with('clm', 'Event deleted!')
+            ->with('tab', 'events');
     }
 }

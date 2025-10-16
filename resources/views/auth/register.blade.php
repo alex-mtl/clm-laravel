@@ -3,7 +3,7 @@
 @section('content')
         <div class="auth-container">
             <div class="logo">
-                <img class="vector-icon" alt="" src="img/clm-logo.svg">
+                <img class="vector-icon" alt="" src="img/clm-logo.png">
             </div>
 
             <div class="auth-tabs">

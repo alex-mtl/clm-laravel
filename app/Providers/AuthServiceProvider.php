@@ -6,6 +6,13 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use App\Models\ClubRequest;
 use App\Policies\ClubRequestPolicy;
+use App\Models\Club;
+use App\Policies\ClubPolicy;
+use App\Models\Role;
+use App\Policies\RolePolicy;
+use App\Models\User;
+use App\Models\Tournament;
+
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -18,6 +25,16 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+        Gate::define('manage_tournament', function (User $user, Tournament $tournament) {
+            return $user->isTournamentOrganizer($tournament->club->id);
+        });
+
+//        Gate::define('manage_club', function (User $user, Club $club) {
+//            dd('test manage_club');
+//            return $user->isClubAdmin($club->id);
+//        });
+
+
 
         // Optional: Define additional gates here if needed
     }

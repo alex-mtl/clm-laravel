@@ -18,7 +18,7 @@
                     </ul>
                 </div>
             @endif
-            <div class="flex-row gap-2">
+            <div class="flex-start gap-2">
 
                 <div class="flex-column gap-1">
                     @include('clubs.logo', ['club' => $club])
@@ -43,16 +43,27 @@
                         :readonly="$mode === 'show'"
                     />
 
+                    <div class="flex-row gap-1">
+                        <x-synchronized-input
+                            name="email"
+                            type="email"
+                            label="Электронная почта"
+                            value="{{ old('email', $club->email ?? '') }}"
+                            placeholder="john.doe@club.com"
+                            required
+                            :readonly="$mode === 'show'"
+                        />
 
-                    <x-synchronized-input
-                        name="email"
-                        type="email"
-                        label="Электронная почта"
-                        value="{{ old('email', $club->email ?? '') }}"
-                        placeholder="john.doe@club.com"
-                        required
-                        :readonly="$mode === 'show'"
-                    />
+                        <x-synchronized-input
+                            name="phone_number"
+                            type="tel"
+                            label="Телефон"
+                            value="{{ old('phone_number', $club->phone_number ?? '') }}"
+                            placeholder="+1234567890"
+
+                            :readonly="$mode === 'show'"
+                        />
+                    </div>
 
 
                     <div class="flex-row gap-1">
@@ -74,7 +85,27 @@
                             label="Город"
                         />
                     </div>
+
+                    <x-synchronized-input
+                        name="website"
+                        type="url"
+                        label="Веб-сайт"
+                        value="{{ old('website', $club->website ?? '') }}"
+                        placeholder="https://example.com"
+                        :readonly="$mode === 'show'"
+                    />
+
+                    <x-synchronized-input
+                        name="description"
+                        type="textarea"
+                        value="{{ old('description', $club->description ?? '') }}"
+                        label="Описание"
+                        placeholder="Введите описание..."
+                    />
+
                 </div>
+
+
 
             </div>
             <button type="submit" class="hidden">Сохранить</button>

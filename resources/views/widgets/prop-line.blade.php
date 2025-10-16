@@ -1,4 +1,4 @@
 <div class="prop-line">
-    <div class="prop-label">{{ $prop->label }}</div>
-    <div class="prop-value">{{ $prop->value }}</div>
+    <div class="prop-label">{{ $label }}</div>
+    <div class="prop-value">{{ $value }}</div>
 </div>

@@ -75,15 +75,35 @@ class TournamentPagesController extends Controller
         });
     }
 
-    public function index()
+    public function getSidebarMenu($activeTab)
     {
-        $tournaments = Tournament::with('club')
-            ->where('phase', '!=', 'draft')
-            ->orderBy('date_start', 'desc')->paginate(10);
+        $sidebarMenu = collect($this->sidebarMenu)->map(function($item) use ($activeTab) { // Changed from fn() to full function syntax
+            $item = (object)$item;
+            $item->active = $item->action == $activeTab;
+            return $item;
+        });
+        return $sidebarMenu;
+    }
+
+    public function index(Request $request)
+    {
+        $query = Tournament::with('club');
+
+        // Apply phase filter if specified
+        if ($request->has('phase') && in_array($request->phase, array_keys(Tournament::PHASES))) {
+            $query->where('phase', $request->phase);
+        } else {
+            // Default: exclude draft, closed, finished
+            $query->whereNotIn('phase', ['draft', 'closed', 'finished']);
+        }
+
+        $tournaments = $query->orderBy('date_start', 'asc')->paginate(10);
+
         return view('tournaments.index', [
             'tournaments' => $tournaments,
             'styles' => ['tournaments.css'],
-            'noFooter' => true
+            'noFooter' => true,
+            'phase' => $request?->phase ?? null // Pass to view for UI feedback
         ]);
     }
 
@@ -91,6 +111,7 @@ class TournamentPagesController extends Controller
     public function show(Tournament $tournament)
     {
         $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
+//        $canManage = auth()->user()->can('manage_tournament', $tournament);
 
         $tournamentInfo = $tournament->getTournamentInfo();
 
@@ -108,17 +129,24 @@ class TournamentPagesController extends Controller
 
         ])->map(fn($item) => (object)$item);
 
+        if ($tab = request()->query('tab') ?? null) {
+            session()->flash('tab', $tab);
+        }
 
+        $sidebarMenu = $this->getSidebarMenu(session('tab') ?? 'info');
+
+        $stats = $tournament->getResultsTable();
         return view('tournaments.show', [
             compact('tournament'),
             'layout' => $layout,
             'mode' => 'show',
             'club' => $tournament->club,
             'tournament' => $tournament,
+            'results' => $stats,
 //            'judges' => $judges,
             'judgesCols' => $judgesCols,
             'tournamentInfo' => $tournamentInfo,
-            'sidebarMenu' => $this->sidebarMenu,
+            'sidebarMenu' => $sidebarMenu,
             'styles' => ['tournaments.css'],
             'scripts' => ['tournament-view.js']
         ]);
@@ -126,6 +154,7 @@ class TournamentPagesController extends Controller
 
     public function applicationForm(Tournament $tournament)
     {
+
         $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
 
         return view('tournaments.application-form', [
@@ -139,6 +168,7 @@ class TournamentPagesController extends Controller
 
     public function judgeCreate(Tournament $tournament)
     {
+        $this->authorize('manage_tournament', $tournament);
 
         $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
         if ($judgeRole = Role::where('slug', 'judge')->first()) {
@@ -164,6 +194,8 @@ class TournamentPagesController extends Controller
 
     public function wizardForm(Tournament $tournament)
     {
+        $this->authorize('manage_tournament', $tournament);
+
         $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
 
         $events = Event::where('tournament_id', $tournament->id)->get();
@@ -176,6 +208,7 @@ class TournamentPagesController extends Controller
                     'date_start' => $tournament->date_start->addDays($day - 1),
                     'date_end' => $tournament->date_start->addDays($day - 1),
                     'description' => (($day == 1) ? 'Начало в 18:00 ' : 'Начало в 10:00 '),
+                    'tables' => floor($tournament->players_quota / 10),
                     'games_quota' => 4
                 ]);
             }
@@ -198,88 +231,184 @@ class TournamentPagesController extends Controller
             'events.*.name' => 'required|string|max:255',
             'events.*.date_start' => 'required|date|after_or_equal:tournament.date_start',
             'events.*.description' => 'nullable|string',
-            'events.*.games_quota' => 'required|integer|min:1|max:10',
+            'events.*.tables' => 'required|integer|min:1|max:10',
+            'events.*.games_quota' => 'required|integer|min:1|max:20',
         ]);
 
         DB::transaction(function () use ($validated, $tournament) {
-            $tablesCount = max(1, floor($tournament->players_quota / 10)); // Ensure at least 1 table
             $judges = $tournament->judges()->withPivot('type')->get();
 
             foreach ($validated['events'] as $eventData) {
-                // 1. Update the Event record itself
                 $event = Event::find($eventData['id']);
+
+                // Update event details
                 $event->update([
                     'name' => $eventData['name'],
                     'description' => $eventData['description'],
                     'games_quota' => $eventData['games_quota'],
+                    'tables' => $eventData['tables'],
                 ]);
 
-                // 2. Handle Game generation
-                $existingGamesCount = $event->games()->count();
-                $requiredGamesCount = $eventData['games_quota'] * $tablesCount;
-
-                if ($existingGamesCount < $requiredGamesCount) {
-                    $this->createGamesForEvent(
-                        event: $event,
-                        gamesToCreate: $requiredGamesCount - $existingGamesCount,
-                        tablesCount: $tablesCount,
-                        judges: $judges
-                    );
-                } elseif ($existingGamesCount > $requiredGamesCount) {
-                    // Optional: Handle case where we need to remove games
-                    $event->games()
-                        ->latest()
-                        ->take($existingGamesCount - $requiredGamesCount)
-                        ->delete();
-                }
+                // Sync games for this event
+                $this->syncGamesForEvent(
+                    event: $event,
+                    tablesCount: $eventData['tables'],
+                    gamesCount: $eventData['games_quota'],
+                    judges: $judges
+                );
             }
         });
 
         return redirect()->route('tournaments.show', $tournament)
             ->with('tab', 'games')
             ->with('success', 'Расписание игр обновлено');
-
     }
 
-    protected function createGamesForEvent(Event $event, int $gamesToCreate, int $tablesCount, Collection $judges)
+    protected function syncGamesForEvent(Event $event, int $tablesCount, int $gamesCount, Collection $judges)
+    {
+        $principalJudges = $judges->where('pivot.type', 'principal_judge');
+        $regularJudges = $judges->where('pivot.type', '!=', 'principal_judge');
+        $regularJudgesArray = $regularJudges->values()->all();
+//        dd($regularJudgesArray);
+
+        // Validation
+        if ($principalJudges->isEmpty()) {
+            throw new \Exception('Not enough principal judges assigned to tournament');
+        }
+
+        if (($regularJudges->count() + $principalJudges->count()) < $tablesCount) {
+            throw new \Exception('Not enough judges assigned to tournament');
+        }
+
+        // Get existing games organized by table and game number
+        $existingGames = $event->games()
+            ->get()
+            ->groupBy(['table', function ($game) {
+                return $game->props['game_number'] ?? 0;
+            }]);
+
+        $gamesToCreate = [];
+        $gamesToUpdate = [];
+        $gamesToDelete = [];
+
+        // Determine what needs to be created, updated, or deleted
+        for ($tableN = 1; $tableN <= $tablesCount; $tableN++) {
+            for ($gameN = 1; $gameN <= $gamesCount; $gameN++) {
+                $code = 'T' . $tableN . 'G' . $gameN;
+
+                if ($tableN === 1) {
+                    // For table 1, always use a principal judge
+                    $judge = $principalJudges->first();
+                } else {
+                    // For other tables, assign a regular judge consistently
+                    // Use the table number as a seed for consistent assignment
+                    $judgeIndex = ($tableN - 2) ;
+                    $judge = $regularJudgesArray[$judgeIndex];
+                }
+
+                $gameData = [
+                    'name' => 'Стол ' . $tableN . ' - Игра ' . $gameN,
+                    'table' => $tableN,
+                    'code' => $code,
+                    'judge_id' => $judge->id,
+                    'date' => $event->date_start,
+                    'props' => [
+                        'table' => $tableN,
+                        'event_id' => $event->id,
+                        'game_number' => $gameN,
+                        'phase-code' => 'SHUFFLE-SLOTS',
+                        'phase' => 'shuffle-slots',
+                        'phase-title' => 'Рассадка',
+                    ],
+                ];
+
+                // Check if game already exists for this table and game number
+                $existingGame = $existingGames[$tableN][$gameN] ?? null;
+
+                if ($existingGame) {
+                    // Update existing game if needed
+                    $existingGame = $existingGame->first();
+                    $gamesToUpdate[] = [
+                        'game' => $existingGame,
+                        'data' => $gameData
+                    ];
+                } else {
+                    // Create new game
+                    $gamesToCreate[] = $gameData;
+                }
+            }
+        }
+
+        // Identify games to delete (those that exist but shouldn't)
+        foreach ($existingGames as $table => $gamesByNumber) {
+            foreach ($gamesByNumber as $gameNumber => $games) {
+                if ($table > $tablesCount || $gameNumber > $gamesCount) {
+                    foreach ($games as $game) {
+                        $gamesToDelete[] = $game->id;
+                    }
+                }
+            }
+        }
+
+        // Execute the changes
+        if (!empty($gamesToDelete)) {
+            $event->games()->whereIn('id', $gamesToDelete)->delete();
+        }
+
+        foreach ($gamesToUpdate as $update) {
+            $update['game']->update($update['data']);
+        }
+
+        if (!empty($gamesToCreate)) {
+            $event->games()->createMany($gamesToCreate);
+        }
+    }
+
+    protected function createGamesForEvent(Event $event, int $gamesToCreate, int $tablesCount, Collection $judges, int $games)
     {
         $principalJudges = $judges->where('pivot.type', 'principal_judge');
         $regularJudges = $judges->where('pivot.type', '!=', 'principal_judge');
 
         if ($principalJudges->isEmpty() ) {
-            throw new \Exception('Not enough judges assigned to tournament');
+            throw new \Exception('Not enough principaljudges assigned to tournament');
         } elseif ( ($regularJudges->count() + $principalJudges->count()) < $tablesCount) {
             throw new \Exception('Not enough judges assigned to tournament');
         }
 
-        for ($i = 0; $i < $gamesToCreate; $i++) {
-            $tableNumber = ($i % $tablesCount) + 1;
+        for ($gameN = 1; $gameN <= $event->games_quota; $gameN++) {
+            for ($tableN = 1; $tableN <= $event->tables; $tableN++) {
+                $code = 'T' . $tableN . 'G' . ($gameN + 1);
 
-            $judge = $tableNumber === 1
-                ? $principalJudges->random()
-                : $regularJudges->random();
+                $judge = $tableN === 1
+                    ? $principalJudges->random()
+                    : $regularJudges->random();
 
-            $event->games()->create([
-                'name' => 'Стол '.$tableNumber.' - Игра '.($i + 1),
-                'table' => $tableNumber,
-                'judge_id' => $judge->id,
-                'date' => $event->date_start, // Example
-                'props' => [
-                    'table' => $tableNumber,
-                    'event_id' => $event->id,
-                    'game_number' => $i + 1,
-                    'phase' => 'shuffle-slots',
-                    'phase-title' => 'Рассадка',
+                $event->games()->create([
+                    'name' => 'Стол ' . $tableN . ' - Игра ' . $gameN,
+                    'table' => $tableN,
+                    'code' => $code,
+                    'judge_id' => $judge->id,
+                    'date' => $event->date_start, // Example
+                    'props' => [
+                        'table' => $tableN,
+                        'event_id' => $event->id,
+                        'game_number' => $gameN,
+                        'phase-code' => 'SHUFFLE-SLOTS',
+                        'phase' => 'shuffle-slots',
+                        'phase-title' => 'Рассадка',
 
-                ],
-                // other game fields
-            ]);
+                    ],
+                    // other game fields
+                ]);
+            }
         }
     }
 
 
     public function judgeStore(Request $request, Tournament $tournament)
     {
+        $this->authorize('manage_tournament', $tournament);
+
         $validatedData  = $request->validate([
             'user_id' => 'required|exists:users,id',
             'type' => 'required|in:' . implode(',', array_keys(TournamentJudges::types)),
@@ -327,6 +456,7 @@ class TournamentPagesController extends Controller
 
     public function applicationApprove(Tournament $tournament, RequestModel $request)
     {
+        $this->authorize('manage_tournament', $tournament);
         // Verify this is a tournament join request
         $isValidRequest = $request->type->slug === 'tournament_join' &&
             $request->target_id === $tournament->id;
@@ -360,4 +490,92 @@ class TournamentPagesController extends Controller
 
         return back()->with('error', 'Request already processed');
     }
+
+    public function applicationDecline(Tournament $tournament, RequestModel $request)
+    {
+        $this->authorize('manage_tournament', $tournament);
+        // Verify this is a tournament join request
+        $isValidRequest = $request->type->slug === 'tournament_join' &&
+            $request->target_id === $tournament->id;
+
+        if (!$isValidRequest) {
+            return back()->with('error', 'Invalid request type or tournament mismatch');
+        }
+
+        // Only process if pending
+        if ($request->status === 'pending') {
+            DB::transaction(function () use ($request, $tournament) {
+                // Update request status
+                $request->update([
+                    'status' => 'declined',
+                    'responder_id' => auth()->id(),
+                    'responded_at' => now(),
+                    'data' => array_merge($request->data ?? [], [
+                        'message' => 'Tournament join request declined',
+                        'declined_at' => now()->toDateTimeString()
+                    ])
+                ]);
+
+                // Add user to tournament
+                $tournament->participants()->detach($request->applicant_id);
+            });
+
+            return redirect()->route('tournaments.show', $tournament)
+                ->with('clm', 'Заявка отклонена!')
+                ->with('tab', 'requests');
+        }
+
+        return back()->with('error', 'Request already processed');
+    }
+
+    public function confimationForm(Tournament $tournament, User $user)
+    {
+        $this->authorize('manage_tournament', $tournament);
+        $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
+
+        return view('tournaments.remove-confirmation-form', [
+            compact('tournament'),
+            'layout' => $layout,
+            'mode' => 'show',
+            'tournament' => $tournament,
+            'user' => $user,
+            'styles' => ['tournaments.css']
+        ]);
+    }
+    public function participantRemove(Tournament $tournament, User $user)
+    {
+        $this->authorize('manage_tournament', $tournament);
+        // Verify this is a tournament join request
+
+        $request = RequestModel::where('type_id', function($query) {
+            $query->select('id')
+                ->from('request_types')
+                ->where('slug', 'tournament_join');
+        })
+            ->where('target_id', $tournament->id)
+            ->where('applicant_id', $user->id)
+            ->first();
+
+
+        if ($request) {
+            $request->update([
+                'status' => 'pending',
+                'responder_id' => null,
+                'responded_at' => null,
+                'data' => array_merge($request->data ?? [], [
+                    'message' => 'Participant removed, request reset to pending',
+                    'reset_at' => now()->toDateTimeString()
+                ])
+            ]);
+        }
+
+        $tournament->participants()->detach($user->id);
+        // Only process if pending
+        return redirect()->route('tournaments.show', $tournament)
+            ->with('clm', 'Участник удален!')
+            ->with('tab', 'participants');
+
+    }
+
+
 }

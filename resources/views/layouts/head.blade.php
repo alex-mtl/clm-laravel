@@ -13,6 +13,8 @@
 
     @stack('styles')
 
+
+    <script src="{{ asset("js/common.js") }}?v={{ filemtime(public_path("js/common.js")) }}" defer></script>
     @isset($scripts)
         @foreach($scripts as $script)
             <script src="{{ asset("js/{$script}") }}?v={{ filemtime(public_path('js/'.$script)) }}" defer></script>
@@ -26,6 +28,9 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>

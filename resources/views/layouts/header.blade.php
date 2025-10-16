@@ -1,7 +1,8 @@
+<!-- {{ env('APP_ENV') }} -->
 <header>
     <span class="home-logo">
         <a href="/" >
-            <img src="/img/clm-logo.svg" alt="CLM">
+            <img src="/img/clm-logo.png" alt="CLM">
         </a>
     </span>
 
@@ -26,7 +27,7 @@
                         class=""
                         id="user-menu"
                 >
-                    Dashboard
+                    @include('users.avatar', ['user' => auth()->user(), 'class' => 'menu-avatar'])
                 </a>
 
                 <x-dropdown-menu
@@ -34,8 +35,8 @@
                     :menu-owner-id="'user-menu'"
                     :menu-items="$menuItems"
                     selected="self"
-
                 />
+
             @else
                 <span class="login">
                 <a href="{{ route('login') }}" class="">

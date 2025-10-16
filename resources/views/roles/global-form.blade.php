@@ -17,13 +17,22 @@
 
             <button class="hidden" type="submit">Save</button>
         </form>
-        <div class="flex-row ">
+        <div class="flex-row">
             <div class="flex items-center justify-between gap-2">
+                <span class="btn" x-data
+                      @click="
+                        document.getElementById('assign-role-form').submit();
+                    ">
+                    Назначить роль
+                </span>
 
-                <span class="btn"
-                      x-data
-                      @click="document.getElementById('assign-role-form').submit()">Сохранить</span>
-
+                <span class="btn danger" x-data
+                      @click="
+                        document.getElementById('assign-role-form').action = '{{ route('users.roles.retract', [$user]) }}';
+                        document.getElementById('assign-role-form').submit();
+                    ">
+                    Отозвать роль
+                </span>
             </div>
         </div>
     </div>

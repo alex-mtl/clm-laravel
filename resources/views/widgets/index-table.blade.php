@@ -6,12 +6,26 @@
     </div>
 
     @foreach ($collection as $item)
-        <div class=" flex-row gap-2 border-bottom ">
+        <div class=" flex-row gap-2 border-bottom index-line">
             @foreach ($cols as $idx => $col)
                 @if ($col->prop === 'actions')
                     @include('widgets.action-buttons')
+                @elseif(is_array($col->prop)  && ($col->multiple ?? false))
+                    @php
+                        $text = '';
+                        foreach ($col->prop as $propName) {
+                            $text .= data_get($item, $propName) . "\n";
+                        }
+                        $text = rtrim($text);
+                    @endphp
+                    <div  class="{{ $col->class ?? 'w-10' }}"> {!! nl2br(e($text)) !!}</div>
                 @elseif(($col->prop === 'btn') && $col->ajax)
-                    @include('widgets.btn')
+                    @php
+                        $btn = $col;
+//                        $btn->item = $item;
+                        $btn->endpoint_params = [$item->id];
+                    @endphp
+                    @include('widgets.btn', ['btn' => $btn])
                 @else
                     @php
                         $value = data_get($item, $col->prop);
@@ -19,7 +33,12 @@
                             ? collect($value)->pluck('name')->implode(', ')
                             : $value;
                     @endphp
-                    <div  class="{{ $col->class ?? 'w-10' }}"> {{ $display }}</div>
+                    @if($col?->link ?? false)
+                        <div  class="{{ $col->class ?? 'w-10' }}"><a href="{{ sprintf($col->link, $item->id ) }}" >{{ $display }}</a></div>
+                    @else
+                        <div  class="{{ $col->class ?? 'w-10' }}"> {{ $display }}</div>
+                    @endif
+
                 @endif
             @endforeach
         </div>

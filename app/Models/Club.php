@@ -37,6 +37,9 @@ class Club extends Model
         'owner_id',
         'country_id',
         'city_id',
+        'description',
+        'phone_number',
+        'website',
     ];
 
     public function owner()

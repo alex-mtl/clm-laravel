@@ -1,5 +1,5 @@
 <div
-    class="material-symbols-outlined"
+    class="material-symbols-outlined {{ ($hidden ?? false) === 'true' ? 'hidden' : '' }}"
     @if($btnid  ?? false)
         id="{{$btnid}}"
     @endif

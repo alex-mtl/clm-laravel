@@ -13,12 +13,13 @@
 }
 
 .action-buttons .lang-trigger img {
-    height: calc(100% - 3vw);
+    /*height: calc(100% - 3vw);*/
+    height: 3rem;
 }
 
 .lang-current {
     position: absolute;
-    bottom: 1.5vw;
+    bottom: calc(50% - 1.5rem);
     right: 0;
     padding: 0;
     font-size: 1rem;

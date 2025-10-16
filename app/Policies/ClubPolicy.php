@@ -24,4 +24,12 @@ class ClubPolicy
         // Проверяем есть ли у пользователя нужный permission
         return $user->hasPermission($ability, $club?->id);
     }
+
+    public function manage_club(User $user, Club $club) {
+        return $user->isClubOwner($club->id) || $user->isAdmin();
+    }
+    public function create_tournament(User $user, Club $club) {
+        return $user->isTournamentOrganizer($club->id);
+    }
+
 }

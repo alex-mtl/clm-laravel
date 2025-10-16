@@ -29,10 +29,14 @@
     line-height: 2rem;
     width: 2rem;
     text-align: center;
-    background-color: var(--clm-text);
+    /*background-color: var(--clm-text);*/
+    background-color: white;
     padding: 0.2rem;
     border-radius: 0.5rem;
     border: 0.2rem solid transparent;
+    background-size: 90% 90%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .player-icon {
@@ -59,28 +63,38 @@
     border-color: var(--clm-red);
 }
 
-.role-icon[data-role="citizen"]::before {
-    content: "thumb_up";
-    color: var(--clm-red);
+/*.role-icon[data-role="citizen"]::before {*/
+/*    content: "thumb_up";*/
+/*    color: var(--clm-red);*/
+/*}*/
+
+.role-icon[data-role="citizen"] {
+    background-image: url('/img/game/citizen.svg');
+    /*color: var(--clm-red);*/
 }
 .role-icon[data-role="mafia"],
 .role-icon[data-role="don"]
 {
     border-color: var(--clm-text);
-    color: var(--clm-text);
-    background-color: var(--clm-header-bg);
+    /*color: var(--clm-text);*/
+    /*background-color: var(--clm-header-bg);*/
 }
-.role-icon[data-role="mafia"]::before {
-    content: "thumb_down";
-}
-
-.role-icon[data-role="don"]::before {
-    content: "diamond";
+.role-icon[data-role="mafia"] {
+    background-image: url('/img/game/mafia.svg');
 }
 
-.role-icon[data-role="sheriff"]::before {
-    content: "local_police";
-    color: var(--clm-orange);
+.role-icon[data-role="don"] {
+    background-image: url('/img/game/don.svg');
+}
+
+/*.role-icon[data-role="sheriff"]::before {*/
+/*    content: "local_police";*/
+/*    color: var(--clm-orange);*/
+/*}*/
+
+.role-icon[data-role="sheriff"] {
+    background-image: url('/img/game/sheriff.svg');
+    /*color: var(--clm-orange);*/
 }
 
 .game-view {
@@ -91,6 +105,34 @@
 .slot-row {
 
 }
+
+.player-avatar {
+    position: relative;
+}
+
+.player-warns {
+    position: absolute;
+    top: 0rem;
+    right: 0rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--clm-red);
+}
+
+.slot-row[data-warns="1"] .player-warns::before {
+    content: "!";
+}
+.slot-row[data-warns="2"] .player-warns::before {
+    content: "!!";
+}
+.slot-row[data-warns="3"] .player-warns::before {
+    content: "!!!";
+}
+.slot-row[data-warns="4"] .player-warns::before {
+    content: "X";
+}
+
+
 .player-avatar  img{
     height: 2.5rem;
     width: 2.5rem;
@@ -116,5 +158,12 @@
     color: red;
 }
 
+
+div[data-speaker="active"] span.role-icon,
+div[data-speaker="active"] .player-avatar img,
+.action-btn.active
+{
+    animation: beat 0.6s infinite ease-in-out;
+}
 
 

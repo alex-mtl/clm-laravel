@@ -12,10 +12,21 @@
     /*color: #fff;*/
 }
 
+.main-action {
+    position: absolute;
+    top: 0px;
+    right: 0;
+}
+
+.main-action .action-btn {
+    font-size: 3rem;
+    line-height: 3rem;
+}
 
 
-.club-view {
-    & .club-metrics {
+
+/*.club-view {*/
+.club-metrics {
         position: relative;
         display: flex;
         flex-direction: row;
@@ -24,7 +35,7 @@
         width:100%;
     }
 
-    & .div {
+.div {
         width: 95px;
         position: relative;
         font-weight: 600;
@@ -34,19 +45,19 @@
         flex-shrink: 0;
     }
 
-    & .div1 {
+.div1 {
         position: relative;
         font-weight: 600;
     }
 
-    & .auto-layout-horizontal1 {
+.auto-layout-horizontal1 {
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: flex-start;
     }
 
-    & .auto-layout-horizontal3 {
+.auto-layout-horizontal3 {
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -54,26 +65,26 @@
         text-align: left;
     }
 
-    & .div4 {
+.div4 {
         position: absolute;
         top: 0px;
         left: 0px;
         font-weight: 600;
     }
 
-    & .group {
+.group {
         width: 53px;
         position: relative;
         height: 24px;
     }
 
-    & .group1 {
+.group1 {
         width: 130px;
         position: relative;
         height: 24px;
     }
 
-    & .auto-layout-horizontal {
+.auto-layout-horizontal {
         position: absolute;
         top: 29px;
         left: calc(50% - 394px);
@@ -84,20 +95,20 @@
         gap: 28px;
     }
 
-    & .frame-child {
+.frame-child {
         width: 65px;
         position: relative;
         height: 65px;
         object-fit: cover;
     }
 
-    & .vector-icon {
+.vector-icon {
         width: 50px;
         position: relative;
         height: 50px;
     }
 
-    & .rectangle {
+.rectangle {
         width: 120px;
         position: relative;
         border-radius: 8px;
@@ -105,24 +116,24 @@
         height: 120px;
     }
 
-    & .club-name {
+.club-name {
         align-self: stretch;
         position: relative;
         text-align: left;
     }
-    & .soul-club {
+.soul-club {
         align-self: stretch;
         position: relative;
     }
 
-    & .div7 {
+.div7 {
         position: relative;
         font-size: 16px;
         font-family: Inter;
         color: #ccc;
     }
 
-    & .auto-layout-vertical2 {
+.auto-layout-vertical2 {
         width: 261px;
         height: 120px;
         display: flex;
@@ -132,7 +143,7 @@
         gap: 15px;
     }
 
-    & .rectangle-parent {
+.rectangle-parent {
         width: 396px;
         display: flex;
         flex-direction: row;
@@ -143,21 +154,21 @@
 
     }
 
-    & .div8 {
+.div8 {
         width: 396px;
         position: relative;
         display: inline-block;
     }
 
-    & .toronto {
+.toronto {
         position: relative;
     }
 
-    & .club-email {
+.club-email {
         position: relative;
     }
 
-    & .toronto-wrapper {
+.toronto-wrapper {
         position: absolute;
         top: 0px;
         left: 197px;
@@ -172,7 +183,7 @@
         box-sizing: border-box;
     }
 
-    & .div9 {
+.div9 {
         position: absolute;
         top: 5px;
         left: 0px;
@@ -180,13 +191,13 @@
         font-weight: 600;
     }
 
-    & .frame {
+.frame {
         width: 397px;
         position: relative;
         height: 35px;
     }
 
-    & .imafia {
+.imafia {
         width: 116px;
         position: relative;
         display: flex;
@@ -194,7 +205,7 @@
         flex-shrink: 0;
     }
 
-    & .imafia-wrapper {
+.imafia-wrapper {
         position: absolute;
         top: 0px;
         left: 197px;
@@ -209,7 +220,7 @@
         box-sizing: border-box;
     }
 
-    & .clubexamplecom-wrapper {
+.clubexamplecom-wrapper {
         position: absolute;
         top: 0px;
         left: 197px;
@@ -224,7 +235,7 @@
         box-sizing: border-box;
     }
 
-    & .email {
+.email {
         position: absolute;
         top: 5px;
         left: 0px;
@@ -233,14 +244,14 @@
         font-weight: 600;
     }
 
-    & .frame2 {
+.frame2 {
         width: 397px;
         position: relative;
         height: 35px;
         font-size: 14px;
     }
 
-    & .wrapper {
+.wrapper {
         position: absolute;
         top: 0px;
         left: 197px;
@@ -256,17 +267,17 @@
         font-size: 14px;
     }
 
-    & .frame-group {
-        width: 386px;
-        height: 480px;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 0px;
-    }
+/*.frame-group {*/
+/*        width: 386px;*/
+/*        height: 480px;*/
+/*        display: flex;*/
+/*        flex-direction: column;*/
+/*        align-items: flex-start;*/
+/*        justify-content: space-between;*/
+/*        gap: 0px;*/
+/*    }*/
 
-    & .frame-wrapper {
+.frame-wrapper {
         box-shadow: 4px 4px 20px rgba(255, 255, 255, 0.1);
         border-radius: 1rem;
         background-color: #1a1a1a;
@@ -281,18 +292,14 @@
         position: relative;
     }
 
-    & .main-action {
-        position: absolute;
-        top: 0px;
-        right: 0;
-    }
 
-    & .b {
+
+.b {
         position: relative;
         transform: rotate(-0.1deg);
     }
 
-    & .auto-layout-horizontal5 {
+.auto-layout-horizontal5 {
         align-self: stretch;
         border-radius: 8px;
         background-color: #ff9000;
@@ -305,7 +312,7 @@
         box-sizing: border-box;
     }
 
-    & .btn-large {
+.btn-large {
         align-self: stretch;
         border-radius: 8px;
         background-color: var(--clm-button-red);
@@ -318,12 +325,12 @@
         box-sizing: border-box;
     }
 
-    & .btn-large:hover {
+.btn-large:hover {
         cursor: pointer;
         background-color: var(--clm-red);
     }
 
-    & .frame-parent {
+.frame-parent {
 
         max-width: 434px;
         display: flex;
@@ -335,7 +342,7 @@
 
     }
 
-    & .div14 {
+.div14 {
         align-self: stretch;
         position: relative;
         font-size: 16px;
@@ -343,7 +350,7 @@
         color: #ccc;
     }
 
-    & .parent {
+.parent {
         width: 108px;
         display: flex;
         flex-direction: column;
@@ -352,7 +359,7 @@
         gap: 15px;
     }
 
-    & .metric {
+.metric {
 
         box-shadow: 4px 4px 20px rgba(255, 255, 255, 0.1);
         border-radius: 1rem;
@@ -369,7 +376,7 @@
         text-align: center;
     }
 
-    & .container {
+.container {
         width: 152px;
         display: flex;
         flex-direction: column;
@@ -378,7 +385,7 @@
         gap: 15px;
     }
 
-    & .club-menu {
+.club-menu {
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -392,7 +399,7 @@
     }
 
 
-    & .parent1 {
+.parent1 {
         width: 184px;
         display: flex;
         flex-direction: column;
@@ -401,7 +408,7 @@
         gap: 15px;
     }
 
-    & .din-ais-parent {
+.din-ais-parent {
         width: 190px;
         display: flex;
         flex-direction: column;
@@ -411,14 +418,14 @@
     }
 
 
-    & .rectangle1 {
+.rectangle1 {
         width: 117px;
         position: relative;
         background-color: #c62828;
         height: 2px;
     }
 
-    & .auto-layout-vertical4 {
+.auto-layout-vertical4 {
         width: 118px;
         height: 34px;
         display: flex;
@@ -431,13 +438,13 @@
         color: #fff;
     }
 
-    & .div19 {
+.div19 {
         position: relative;
         font-weight: 600;
         text-align: left;
     }
 
-    & .auto-layout-horizontal7 {
+.auto-layout-horizontal7 {
         align-self: stretch;
         display: flex;
         flex-direction: row;
@@ -447,7 +454,7 @@
         gap: 0px;
     }
 
-    & .auto-layout-vertical3 {
+.auto-layout-vertical3 {
         align-self: stretch;
         border-radius: 1rem;
         border: 1px solid #333;
@@ -458,14 +465,14 @@
         padding: 19px 0px;
     }
 
-    & .b5 {
+.b5 {
         width: 283px;
         position: relative;
         display: inline-block;
         flex-shrink: 0;
     }
 
-    & .parent2 {
+.parent2 {
         align-self: stretch;
         display: flex;
         flex-direction: row;
@@ -474,7 +481,7 @@
         gap: 0px;
     }
 
-    & .user-avatar {
+.user-avatar {
         display: flex;
         position: relative;
 
@@ -485,21 +492,21 @@
         /*height: 65px;*/
     }
 
-    & .div23 {
+.div23 {
         width: 203px;
         position: relative;
         font-weight: 600;
         display: inline-block;
     }
 
-    & .div24 {
+.div24 {
         align-self: stretch;
         position: relative;
         font-size: 14px;
         color: #ccc;
     }
 
-    & .user-details {
+.user-details {
         /*width: 172px;*/
         display: flex;
         flex-direction: column;
@@ -508,7 +515,7 @@
         gap: 0.2rem;
     }
 
-    & .rectangle-group {
+.rectangle-group {
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -516,7 +523,7 @@
         gap: 15px;
     }
 
-    & .user-status {
+.user-status {
         position: relative;
         font-size: 16px;
         color: #10b981;
@@ -524,7 +531,7 @@
         margin-left: auto;
     }
 
-    & .user-row {
+.user-row {
         align-self: stretch;
         display: flex;
         flex-direction: row;
@@ -533,13 +540,13 @@
         border-bottom: solid 1px var(--clm-content-border);
     }
 
-    & .div26 {
+.div26 {
         align-self: stretch;
         position: relative;
         font-weight: 600;
     }
 
-    & .parent4 {
+.parent4 {
         width: 171px;
         display: flex;
         flex-direction: column;
@@ -548,21 +555,21 @@
         gap: 1px;
     }
 
-    & .div28 {
+.div28 {
         position: relative;
         font-size: 14px;
         color: #10b981;
         text-align: right;
     }
 
-    & .div29 {
+.div29 {
         width: 205px;
         position: relative;
         font-weight: 600;
         display: inline-block;
     }
 
-    & .rectangle-parent1 {
+.rectangle-parent1 {
         width: 275px;
         display: flex;
         flex-direction: row;
@@ -572,7 +579,7 @@
     }
 
 
-    & .data {
+.data {
         align-self: stretch;
         display: flex;
         flex-direction: column;
@@ -582,7 +589,7 @@
         font-size: 20px;
     }
 
-    & .data-wrapper {
+.data-wrapper {
         align-self: stretch;
         display: flex;
         flex-direction: column;
@@ -596,11 +603,11 @@
 
     }
 
-    & .data-wrapper.hidden {
+.data-wrapper.hidden {
         display: none;
     }
 
-    & .user-avatar  img{
+.user-avatar  img{
         height: 5rem;
         width: 5rem;
         width: auto;
@@ -611,7 +618,7 @@
         margin: 0.2rem;
     }
 
-    & .club-content {
+.club-content {
         box-shadow: 4px 4px 20px rgba(255, 255, 255, 0.1);
         border-radius: 1rem;
         background-color: #1a1a1a;
@@ -628,7 +635,7 @@
         width: 100%;
     }
 
-    & .request-actions {
+.request-actions {
         display: flex;
         position: relative;
         flex-direction: row;
@@ -637,7 +644,7 @@
         align-items: center;
     }
 
-    & .action-btn {
+.action-btn {
         display: flex;
         align-items: center;
         font-size: 3.5rem;
@@ -658,45 +665,42 @@
 
     }
 
-    & .main-action .action-btn {
-        font-size: 3rem;
-        line-height: 3rem;
-    }
 
-    & .action-btn:hover ,
-    & .action-btn.dark:hover ,
-    & .action-btn.red:hover ,
-    & .action-btn.dark-red:hover
+
+.action-btn:hover ,
+.action-btn.dark:hover ,
+.action-btn.red:hover ,
+.action-btn.dark-red:hover
     {
         color: var(--clm-red);
         background-color: var(--clm-text);
         cursor: pointer;
     }
 
-    & .action-btn.success:hover {
+.action-btn.success:hover {
         color: var(--clm-text-green-light);
     }
 
-    & .action-btn.dark {
+.action-btn.dark {
         background-color: var(--clm-light-bg);
     }
 
-    & .action-btn.info {
+.action-btn.info {
         background-color: var(--clm-text);
         color: var(--clm-text-green-light);
     }
 
-    & .action-btn.red {
+.action-btn.red {
         background-color: var(--clm-red);
     }
 
 
 
-    & .action-btn.dark-red {
+.action-btn.dark-red {
         background-color: var(--clm-button-red);
     }
 
-    & .request-status {
+.request-status {
         display: flex;
         align-items: center;
         font-size: 3.5rem;
@@ -718,20 +722,20 @@
 
     }
 
-    & .request-status.approved {
+.request-status.approved {
         color: var(--clm-text-green-light);
     }
 
-    & .request-status.rejected {
+.request-status.rejected {
         color: var(--clm-red);
     }
 
-    & .request-status.pending {
+.request-status.pending {
         color: var(--clm-orange);
     }
 
 
-    & .parent7 {
+.parent7 {
         width: 246px;
         display: flex;
         flex-direction: column;
@@ -740,7 +744,7 @@
         gap: 3px;
     }
 
-    & .div34 {
+.div34 {
         width: 90px;
         position: relative;
         font-size: 16px;
@@ -750,7 +754,7 @@
         flex-shrink: 0;
     }
 
-    & .frame-parent7 {
+.frame-parent7 {
         align-self: stretch;
         display: flex;
         flex-direction: row;
@@ -760,14 +764,14 @@
         font-size: 20px;
     }
 
-    & .div35 {
+.div35 {
         align-self: stretch;
         position: relative;
         line-height: 24px;
         font-weight: 600;
     }
 
-    & .parent8 {
+.parent8 {
         width: 281px;
         display: flex;
         flex-direction: column;
@@ -776,7 +780,7 @@
         gap: 3px;
     }
 
-    & .div37 {
+.div37 {
         width: 74px;
         position: relative;
         color: #ff9000;
@@ -785,7 +789,7 @@
         flex-shrink: 0;
     }
 
-    & .parent9 {
+.parent9 {
         width: 243px;
         display: flex;
         flex-direction: column;
@@ -794,7 +798,7 @@
         gap: 3px;
     }
 
-    & .div40 {
+.div40 {
         width: 89px;
         position: relative;
         color: #ff9000;
@@ -803,7 +807,7 @@
         flex-shrink: 0;
     }
 
-    & .frame-parent6 {
+.frame-parent6 {
         align-self: stretch;
         display: flex;
         flex-direction: column;
@@ -814,7 +818,7 @@
         font-family: Inter;
     }
 
-    & .parent6 {
+.parent6 {
         align-self: stretch;
         background-color: #1a1a1a;
         display: flex;
@@ -824,7 +828,7 @@
         gap: 25px;
     }
 
-    & .last-achievements {
+.last-achievements {
         box-shadow: 4px 4px 20px rgba(255, 255, 255, 0.1);
         border-radius: 1rem;
         background-color: #1a1a1a;
@@ -839,14 +843,14 @@
         text-align: left;
     }
 
-    & .div41 {
+.div41 {
         width: 280px;
         position: relative;
         display: inline-block;
         flex-shrink: 0;
     }
 
-    & .div42 {
+.div42 {
         width: 79px;
         position: relative;
         font-size: 18px;
@@ -858,7 +862,7 @@
         flex-shrink: 0;
     }
 
-    & .div44 {
+.div44 {
         width: 40px;
         position: relative;
         font-size: 18px;
@@ -870,14 +874,14 @@
         flex-shrink: 0;
     }
 
-    & .div45 {
+.div45 {
         width: 340px;
         position: relative;
         display: inline-block;
         flex-shrink: 0;
     }
 
-    & .div46 {
+.div46 {
         width: 150px;
         position: relative;
         font-size: 18px;
@@ -889,14 +893,14 @@
         flex-shrink: 0;
     }
 
-    & .div47 {
+.div47 {
         width: 268px;
         position: relative;
         display: inline-block;
         flex-shrink: 0;
     }
 
-    & .div48 {
+.div48 {
         width: 67px;
         position: relative;
         font-size: 18px;
@@ -908,7 +912,7 @@
         flex-shrink: 0;
     }
 
-    & .frame-parent10 {
+.frame-parent10 {
         align-self: stretch;
         display: flex;
         flex-direction: column;
@@ -920,7 +924,7 @@
         font-family: Inter;
     }
 
-    & .parent10 {
+.parent10 {
         align-self: stretch;
         display: flex;
         flex-direction: column;
@@ -929,7 +933,7 @@
         gap: 25px;
     }
 
-    & .frame-wrapper5 {
+.frame-wrapper5 {
         position: absolute;
         top: 963px;
         left: 0px;
@@ -947,7 +951,7 @@
         text-align: left;
     }
 
-    & .club-details {
+.club-details {
         position: relative;
         display: flex;
         flex-direction: column;
@@ -959,7 +963,7 @@
         /*font-family: 'Druk Wide Bold';*/
     }
 
-    & .rectangle8 {
+.rectangle8 {
         position: absolute;
         top: 0px;
         left: 0px;
@@ -968,7 +972,7 @@
         height: 313px;
     }
 
-    & .group2 {
+.group2 {
         width: 1440px;
         position: absolute;
         margin: 0 !important;
@@ -978,14 +982,14 @@
         z-index: 0;
     }
 
-    & .frame-item {
+.frame-item {
         width: 50px;
         position: relative;
         height: 50px;
         object-fit: contain;
     }
 
-    & .div49 {
+.div49 {
         width: 348px;
         position: relative;
         display: inline-block;
@@ -993,7 +997,7 @@
         flex-shrink: 0;
     }
 
-    & .group-container {
+.group-container {
         align-self: stretch;
         height: 147px;
         display: flex;
@@ -1003,7 +1007,7 @@
         gap: 10px;
     }
 
-    & .frame-parent13 {
+.frame-parent13 {
         width: 431px;
         display: flex;
         flex-direction: column;
@@ -1012,20 +1016,20 @@
         gap: 88px;
     }
 
-    & .div50 {
+.div50 {
         position: relative;
         font-size: 18px;
         line-height: 28px;
         font-weight: 600;
     }
 
-    & .div51 {
+.div51 {
         width: 104px;
         position: relative;
         display: inline-block;
     }
 
-    & .auto-layout-vertical5 {
+.auto-layout-vertical5 {
         width: 107px;
         height: 170px;
         display: flex;
@@ -1035,7 +1039,7 @@
         gap: 10px;
     }
 
-    & .frame-parent12 {
+.frame-parent12 {
         display: flex;
         flex-direction: row;
         align-items: flex-start;
@@ -1043,21 +1047,21 @@
         gap: 22px;
     }
 
-    & .span {
+.span {
         font-weight: 600;
         font-family: Inter;
     }
 
-    & .p {
+.p {
         margin: 0;
     }
 
-    & .p2 {
+.p2 {
         margin: 0;
         font-weight: 600;
     }
 
-    & .rectangle9 {
+.rectangle9 {
         position: absolute;
         top: calc(50% - 23px);
         left: calc(50% - 216px);
@@ -1067,7 +1071,7 @@
         height: 46px;
     }
 
-    & .div56 {
+.div56 {
         position: absolute;
         top: calc(50% - 14px);
         left: calc(50% + 96px);
@@ -1075,7 +1079,7 @@
         font-weight: 600;
     }
 
-    & .email2 {
+.email2 {
         position: absolute;
         top: calc(50% - 8px);
         left: calc(50% - 200px);
@@ -1086,7 +1090,7 @@
         height: 16.2px;
     }
 
-    & .line {
+.line {
         position: absolute;
         top: calc(50% - 23.5px);
         left: calc(50% + 72.5px);
@@ -1096,7 +1100,7 @@
         height: 47px;
     }
 
-    & .group3 {
+.group3 {
         width: 432px;
         position: relative;
         height: 46px;
@@ -1104,7 +1108,7 @@
         color: #252525;
     }
 
-    & .email-parent {
+.email-parent {
         align-self: stretch;
         height: 189px;
         display: flex;
@@ -1114,13 +1118,13 @@
         gap: 29px;
     }
 
-    & .frame-inner {
+.frame-inner {
         width: 177.6px;
         position: relative;
         height: 36px;
     }
 
-    & .frame-parent14 {
+.frame-parent14 {
         width: 431px;
         display: flex;
         flex-direction: column;
@@ -1129,7 +1133,7 @@
         gap: 29px;
     }
 
-    & .frame-parent11 {
+.frame-parent11 {
         width: 1338px;
         display: flex;
         flex-direction: row;
@@ -1139,7 +1143,7 @@
         z-index: 1;
     }
 
-    & .group-group {
+.group-group {
         position: absolute;
         bottom: 0px;
         left: calc(50% - 720px);
@@ -1157,4 +1161,4 @@
     }
 
 
-}
+/*}*/

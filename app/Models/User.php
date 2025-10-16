@@ -12,6 +12,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Support\Facades\DB;
+
 
 class User extends Authenticatable
 {
@@ -103,12 +105,33 @@ class User extends Authenticatable
             ->using(ClubMember::class);
     }
 
+    public function myClubs()
+    {
+        return $this->hasMany(Club::class, 'owner_id');
+    }
+
+    public function tournamentParticipants()
+    {
+        return $this->hasMany(TournamentParticipant::class);
+    }
+
+    public function tournaments()
+    {
+        return $this->belongsToMany(Tournament::class, 'tournament_participants')
+            ->withTimestamps();
+    }
+    public function games()
+    {
+        return $this->belongsToMany(Game::class, 'game_participants')
+            ->withTimestamps();
+    }
+
     public function hasRole($roleSlug, $clubId = null)
     {
         return $this->roles()
-            ->where('slug', $roleSlug)
+            ->where('roles.slug', $roleSlug)
             ->when($clubId, function($query) use ($clubId) {
-                $query->where('club_id', $clubId);
+                $query->where('user_role.club_id', $clubId);
             })
             ->exists();
     }
@@ -167,13 +190,20 @@ class User extends Authenticatable
     // Проверка на владельца клуба
     public function isClubOwner($clubId)
     {
-        return $this->hasRole('club_owner', $clubId) || $this->isLeagueDirector();
+        $club = Club::find($clubId);
+        if ($club) {
+            return ($club->owner_id === $this->id) || $this->hasRole('club_owner', $clubId) || $this->isLeagueDirector();
+        } else {
+            return false;
+        }
     }
 
     // Проверка на администратора клуба
     public function isClubAdmin($clubId)
     {
-        return $this->hasRole('club_admin', $clubId) || $this->isClubOwner($clubId);
+        return once(function () use ($clubId) {
+            return $this->isSuperAdmin() || $this->hasRole('club_admin', $clubId) || $this->isClubOwner($clubId);
+        });
     }
 
     // Проверка на ведущего клуба
@@ -191,7 +221,9 @@ class User extends Authenticatable
     // Проверка на организатора турнира
     public function isTournamentOrganizer($clubId)
     {
-        return $this->hasRole('tournament_organizer', $clubId) || $this->isClubHost($clubId);
+        return once(function () use ($clubId) {
+            return $this->hasRole('tournament_organizer', $clubId) || $this->isClubAdmin($clubId);
+        });
     }
     static public function saveAvatar($request, $user = null)
     {
@@ -213,10 +245,12 @@ class User extends Authenticatable
     }
 
     public function getClubSelector() {
-        $clubs = $this->clubs()->pluck('clubs.name', 'clubs.id');
+        $memberClubs = $this->clubs()->pluck('clubs.name', 'clubs.id');
+        $ownedClubs = $this->myClubs()->pluck('name', 'id');
+
+        $clubs = $memberClubs->union($ownedClubs);
         $clubs->prepend('<empty>', 0);
 
-//        dd($clubs);
         return $clubs;
     }
 
@@ -231,6 +265,57 @@ class User extends Authenticatable
             'dashboard' => ['label'=>'Управление', 'link'=>'/dashboard'],
             'logout' => ['label' => 'Выйти', 'link' => '/logout'],
         ];
+    }
+
+    public function getPlayerInfo()
+    {
+        $playerInfo = collect([
+            [
+                'label' => 'Клуб',
+                'value' => $this->club?->name,
+            ],
+            [
+                'label' => 'Дата',
+                'value' => $this->created_at->format('Y.m.d'),
+            ],
+            [
+                'label' => 'Сыграно игр (К/Ш/Ч/Д/Всего)',
+                'value' => $this->getGames() ?? '0 / 0 / 0 / 0 / 0',
+            ],
+            [
+                'label' => 'Сыграно турниров',
+                'value' => $this->tournaments()->count() ?? '0',
+            ],
+
+        ])->map(function($item) { // Changed from fn() to full function syntax
+            return (object)$item;
+        });
+
+        return $playerInfo;
+    }
+
+    public function getGames() {
+
+
+        $counts = DB::table('game_participants')
+            ->select('role', DB::raw('COUNT(*) as count'))
+            ->where('user_id', $this->id)
+            ->groupBy('role')
+            ->pluck('count', 'role')
+            ->toArray();
+
+        $roles = ['citizen',  'sheriff', 'mafia', 'don'];
+
+        $result = [];
+        $total = 0;
+        foreach ($roles as $role) {
+            $result[] = $counts[$role] ?? 0;
+            $total += $counts[$role] ?? 0;
+        }
+
+        $result[] = $total;
+
+        return implode(' / ', $result);
     }
 
 }

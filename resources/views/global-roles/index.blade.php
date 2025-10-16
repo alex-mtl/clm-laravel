@@ -14,7 +14,8 @@
             [
                 'cols' => $cols,
                 'collection' => $globalRoles,
-                'resource' => 'roles'
+                'resource' => 'roles',
+                'ajax' => true,
             ])
 
     </div>

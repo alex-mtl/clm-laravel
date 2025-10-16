@@ -50,7 +50,15 @@ class CityController extends Controller
 
     public function create()
     {
+        $layout  = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
+        $city = new City(['country_id' => 1]);
+        $countrySelector = Country::getCountrySelector();
+
         return view('cities.create',[
+            'layout' => $layout,
+            'city' => $city,
+            'mode' => 'create',
+            'countrySelector' => $countrySelector,
             'countries' => Country::all()
         ]);
     }

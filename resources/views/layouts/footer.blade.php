@@ -1,23 +1,24 @@
 <footer >
 
 
-            <div class="frame-parent">
-                <div class="group-container">
-                    <img class="frame-child" alt="" src="/img/clm-logo.svg">
-
-                    <div class="div">Платформа для подсчёта рейтингов игроков, ведения турниров и игровых дней в мафии</div>
+            <div class="flex-column gap-1">
+{{--                <div class="group-container">--}}
+                <div class="logo-wrapper">
+                    <img class="frame-child" alt="" src="/img/clm-logo.png">
                 </div>
+                    <div class="">Платформа для подсчёта рейтингов игроков, ведения турниров и игровых дней в мафии</div>
+{{--                </div>--}}
                 <div class="copyright">© 2025 CLM Mafia Platform. Все права защищены.</div>
             </div>
-            <div class="auto-layout-vertical">
-                <div class="div1"><a href="/">Главная</a></div>
-                <div class="div2">Рейтинги</div>
-                <div class="div2">Турниры</div>
-                <div class="div2">Рейтинг</div>
-                <div class="div2">Зал славы</div>
-                <div class="div2">Статистика</div>
+            <div class="flex-column gap-1 ">
+                <div class=""><a href="/">Главная</a></div>
+                <div class="">Рейтинги</div>
+                <div class="">Турниры</div>
+                <div class="">Рейтинг</div>
+                <div class="">Зал славы</div>
+                <div class="">Статистика</div>
             </div>
-            <div class="right-group">
+            <div class="flex-column gap-1 relative">
                 <div class="email-parent">
                     <div class="email-container">
                         <p class="p">

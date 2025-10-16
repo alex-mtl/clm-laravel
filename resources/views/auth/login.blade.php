@@ -14,7 +14,7 @@
                 <div class="instance-parent">
 
                     <div class="vector-parent">
-                        <img class="vector-icon" alt="" src="img/clm-logo.svg">
+                        <img class="vector-icon" alt="" src="img/clm-logo.png">
                     </div>
 
                     <div class="auto-layout-horizontal">

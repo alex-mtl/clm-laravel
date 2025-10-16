@@ -14,5 +14,7 @@ class Kernel extends HttpKernel {
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
     ];
-    protected $routeMiddleware = [];
+    protected $routeMiddleware = [
+        'telegram.bot' => \App\Http\Middleware\VerifyTelegramBot::class,
+    ];
 }

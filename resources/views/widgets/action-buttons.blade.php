@@ -28,11 +28,12 @@
             <span class="material-symbols-outlined" >edit_note</span>
         </div>
         {{--                        <a href="{{ route($resource.'.edit', $item) }}">Edit</a>--}}
-        <form class="hidden" id="delete-form-{{ $item->id }}" action="{{ route($resource.'.destroy', ($parent ?? false) ? [$parent, $item] : $item) }}" method="POST">
-            @csrf @method('DELETE')
+        <form class="hidden" id="delete-form-{{ str_replace('.', '-', $resource) }}-{{ $item->id }}" action="{{ route($resource.'.destroy', ($parent ?? false) ? [$parent, $item] : $item) }}" method="POST">
+            @csrf
+            @method('DELETE')
             <button type="submit">Delete</button>
         </form>
-        <div class="action-btn danger" onclick="document.getElementById('delete-form-{{ $item->id }}').submit();" title="Удалить">
+        <div class="action-btn danger" onclick="document.getElementById('delete-form-{{ str_replace('.', '-', $resource) }}-{{ $item->id }}').submit();" title="Удалить">
             <span class="material-symbols-outlined" >cancel</span>
         </div>
 

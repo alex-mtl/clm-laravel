@@ -7,5 +7,10 @@
                 @include('tournaments.tile', ['tournament' => $tournament])
             @endforeach
         </div>
+        @if($tournaments->hasPages())
+            <div class="pagination">
+                {{ $tournaments->links() }}
+            </div>
+        @endif
     </div>
 @endsection

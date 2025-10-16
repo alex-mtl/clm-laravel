@@ -20,7 +20,7 @@
                 maxlength="3"
                 placeholder="usa"
             />
-            <button type="submit">Save</button>
+            <button class="btn" type="submit">Save</button>
         </form>
     </div>
 @endsection

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -11,84 +12,157 @@ use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
-public function showLogin()
-{
+    public function showLogin()
+    {
 //    return view('auth.login');
-    return view('auth.register', [
-        'styles' => ['login.css']
-    ]);
-}
-
-public function login(Request $request)
-{
-    $credentials = $request->only('email', 'password');
-
-    $user = User::where('email', $credentials['email'])->first();
-
-    // Check if user exists and account is active
-    if (!$user || !$user->is_active) {
-        return back()->withErrors([
-            'email' => 'Please verify your email address before logging in.',
+        return view('auth.register', [
+            'styles' => ['login.css']
         ]);
     }
 
-    if (Auth::attempt($credentials)) {
-        $request->session()->regenerate();
-        return redirect('/dashboard');
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        $user = User::where('email', $credentials['email'])->first();
+
+        // Check if user exists and account is active
+        if (!$user || !$user->is_active) {
+            return back()->withErrors([
+                'email' => 'Please verify your email address before logging in.',
+            ]);
+        }
+
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect('/dashboard');
+        }
+
+        return back()->withErrors(['email' => 'Invalid credentials'])->withInput();
     }
 
-    return back()->withErrors(['email' => 'Invalid credentials'])->withInput();
-}
-
-public function showRegister()
-{
-    return view('auth.register', [
-        'styles' => ['login.css']
-    ]);
-}
-
-public function register(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users',
-        'password' => 'required|min:6|confirmed',
-    ]);
-
-    $email = $request->email;
-    $domain = substr(strrchr($email, "@"), 1);
-
-    $userData = [
-        'name' => $request->name,
-        'email' => $email,
-        'password' => Hash::make($request->password),
-        'is_active' => false,
-        'email_verification_token' => Str::random(32),
-    ];
-
-    // Auto-activate @clm.org emails, others require verification
-    if ($domain === 'clm.org') {
-        $userData['is_active'] = true;
-        $userData['email_verified_at'] = now();
-        $userData['email_verification_token'] = null;
+    public function showRegister()
+    {
+        return view('auth.register', [
+            'styles' => ['login.css']
+        ]);
     }
 
+    public function forgotPasswordForm()
+    {
+        return view('auth.forgot-password', [
+            'styles' => ['login.css']
+        ]);
+    }
 
-    $user = User::create($userData);
-//    dd($user);
-    if ($domain !== 'clm.org') {
-        $verificationUrl = route('verify.email', ['token' => $user->email_verification_token]);
-        Mail::send('emails.welcome', ['user' => $user, 'verificationUrl' => $verificationUrl], function ($message) use ($user) {
+    public function sendPasswordResetEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        // Генерируем токен сброса пароля
+        $token = Str::random(64);
+
+        // Сохраняем токен в базе
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $user->email],
+            [
+                'token' => Hash::make($token),
+                'created_at' => now()
+            ]
+        );
+
+        // Отправляем email
+        $resetUrl = route('password.reset', ['token' => $token, 'email' => $user->email]);
+
+        Mail::send('emails.reset-password', [
+            'user' => $user,
+            'resetUrl' => $resetUrl
+        ], function ($message) use ($user) {
             $message->to($user->email)
-                ->subject("🎩 Добро пожаловать в семью, {$user->name}! Подтверди, что ты с нами...");
+                ->subject('🔐 Сброс пароля для вашего аккаунта');
         });
 
-        return redirect('/login')->with('success',
-            'Registration successful. Please check your email to verify your account.');
+        return back()->with('success', 'Ссылка для сброса пароля отправлена на вашу почту.');
     }
 
-    return redirect('/login')->with('success', 'Registration successful. You can now login.');
-}
+    public function showResetPasswordForm($token)
+    {
+        return view('auth.reset-password', ['token' => $token]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users',
+            'password' => 'required|min:6|confirmed',
+            'token' => 'required'
+        ]);
+
+        $resetData = DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->first();
+
+        if (!$resetData || !Hash::check($request->token, $resetData->token)) {
+            return back()->withErrors(['email' => 'Неверный токен сброса пароля.']);
+        }
+
+        // Обновляем пароль
+        User::where('email', $request->email)
+            ->update(['password' => Hash::make($request->password)]);
+
+        // Удаляем использованный токен
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        return redirect('/login')->with('success', 'Пароль успешно изменен!');
+    }
+
+
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        $email = $request->email;
+        $domain = substr(strrchr($email, "@"), 1);
+
+        $userData = [
+            'name' => $request->name,
+            'email' => $email,
+            'password' => Hash::make($request->password),
+            'is_active' => false,
+            'email_verification_token' => Str::random(32),
+        ];
+
+        // Auto-activate @clm.org emails, others require verification
+        if ($domain === 'clm.org') {
+            $userData['is_active'] = true;
+            $userData['email_verified_at'] = now();
+            $userData['email_verification_token'] = null;
+        }
+
+
+        $user = User::create($userData);
+//    dd($user);
+        if ($domain !== 'clm.org') {
+            $verificationUrl = route('verify.email', ['token' => $user->email_verification_token]);
+            Mail::send('emails.welcome', ['user' => $user, 'verificationUrl' => $verificationUrl], function ($message) use ($user) {
+                $message->to($user->email)
+                    ->subject("🎩 Добро пожаловать в семью, {$user->name}! Подтверди, что ты с нами...");
+            });
+
+            return redirect('/login')->with('success',
+                'Registration successful. Please check your email to verify your account.');
+        }
+
+        return redirect('/login')->with('success', 'Registration successful. You can now login.');
+    }
 
     public function redirectToGoogle()
     {
@@ -190,10 +264,11 @@ public function register(Request $request)
     public function dashboard()
     {
         return view('dashboard', [
-         'styles' => ['dashboard.css']
+            'styles' => ['dashboard.css']
 
         ]);
     }
+
     public function showLogout()
     {
         return view('auth.logout');

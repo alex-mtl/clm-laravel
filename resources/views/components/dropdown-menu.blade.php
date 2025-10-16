@@ -3,17 +3,21 @@
     <div
         x-show="open"
         @click.outside="close()"
+        class="dropdwown-select-options"
         style="
             position: absolute;
             left:-10rem;
-            background: white;
-            border: 1px solid #ddd;
-            min-width: 150px;
+            /*background: white;*/
+            /*border: 1px solid #ddd;*/
+            /*min-width: 150px;*/
+            font-size: 1rem;
+            width: auto;
             z-index: 1000;
         "
     >
         @foreach($menuItems as $item)
             <div
+                class="select-option"
                 style=""
                 @click="handleClick(event, {{ json_encode($item) }})"
             >

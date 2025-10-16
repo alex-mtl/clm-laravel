@@ -12,7 +12,8 @@
             'cols' => $cols,
             'collection' => $roles,
             'resource' => 'clubs.roles',
-            'parent' => $club
+            'parent' => $club,
+
         ])
 
     </div>

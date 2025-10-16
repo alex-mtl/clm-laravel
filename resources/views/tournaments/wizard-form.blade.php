@@ -2,7 +2,6 @@
 
 @section('content')
     <div class="content-main">
-{{--        <div>Подать заявку?</div>--}}
         <form id="wizard-form" action="{{ route('tournaments.events.update', [$tournament]) }}" method="POST">
             @csrf
             @if($mode === 'create')
@@ -20,7 +19,7 @@
                     <x-synchronized-input
                         name="events[{{ $day }}][name]"
                         label="День"
-                        value="{{ old('name', $event->name ?? '') }}"
+                        value="{{ old('events['.$day.'][name]', $event->name ?? '') }}"
                         placeholder="День"
                         :readonly="$mode === 'show'"
                     />
@@ -28,21 +27,29 @@
                         name="events[{{ $day }}][date_start]"
                         label="Дата"
                         type="date"
-                        value="{{ old('date_start', $event->date_start_display ?? '') }}"
+                        value="{{ old('events['.$day.'][date_start]', $event->date_start_display ?? '') }}"
                         :readonly="true"
                     />
                     <x-synchronized-input
                         name="events[{{ $day }}][description]"
                         label="Описание"
-                        value="{{ old('description', $event->description ?? '') }}"
+                        value="{{ old('events['.$day.'][description]', $event->description ?? '') }}"
                         placeholder="Дополнительная информация (опционально)"
                         :readonly="$mode === 'show'"
                     />
 
                     <x-synchronized-input
+                        name="events[{{ $day }}][tables]"
+                        label="Столов"
+                        value="{{ old('events['.$day.'][tables]', $event->tables ?? 1) }}"
+                        placeholder="1"
+                        type="number"
+                        :readonly="$mode === 'show'"
+                    />
+                    <x-synchronized-input
                         name="events[{{ $day }}][games_quota]"
-                        label="Количество игр"
-                        value="{{ old('games_quota', $event->games_quota ?? '') }}"
+                        label="Игр"
+                        value="{{ old('events['.$day.'][games_quota]', $event->games_quota ?? '') }}"
                         placeholder="4"
                         type="number"
                         :readonly="$mode === 'show'"

@@ -31,9 +31,11 @@
 
          // Computed property for selected label
          get selectedLabel() {
-             if (!this.selected) return 'Select...';
+             if (!this.selected)  return 'Select...';
+
              const option = this.options[this.selected];
-             return this.getOptionLabel(option) || 'Select...';
+
+             return this.getOptionLabel(option) ?? 'Select...';
          },
 
          // Toggle dropdown visibility
@@ -77,7 +79,7 @@
     <select
         x-model="selected"
 
-        name="{{ $name }}" style="display: none;">
+        name="{{ $name }}" style="display: none;" {{ $attributes }}>
         @foreach($options as $value => $olabel)
             <option value="{{ $value }}">{{ is_array($olabel) ? $olabel['label'] : $olabel }}</option>
         @endforeach
@@ -91,7 +93,7 @@
 
     @if(!$invisible || $invisible==='false')
         <div @click="toggle()" class="dropdwown-menu pretty-input {{ $class ?? '' }}">
-            <span class="styled-input" x-text="selectedLabel"></span>
+            <span class="styled-input" x-text="selectedLabel" ></span>
             @if(!$readonly)
             <span class="dropdwown-menu-arrow"
                   x-text="open ? '▲' : '▼'"

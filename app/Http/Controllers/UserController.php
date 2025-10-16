@@ -38,7 +38,7 @@ class UserController extends Controller
             ],
             [
                 'name' => 'Выдать роль',
-                'class' => 'w-5',
+                'class' => 'inline-btn w-5',
                 'prop' => 'btn',
                 'icon' => 'add_moderator',
                 'endpoint' => route('users.roles.assign', '%s'),

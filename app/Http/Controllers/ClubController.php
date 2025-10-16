@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Country;
 use App\Models\City;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class ClubController extends Controller
 {
@@ -44,9 +45,12 @@ class ClubController extends Controller
             'email' => 'nullable|email',
             'country_id' => 'nullable|exists:countries,id',
             'city_id' => 'nullable|exists:cities,id',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048|ratio:1,1',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'description' => 'nullable|string|max:1000',
+            'phone_number' => 'nullable|string|max:20',
+            'website' => 'nullable|url|max:255',
         ]);
 
         foreach (array_keys(Club::IMG_TYPES) as $type) {
@@ -75,6 +79,10 @@ class ClubController extends Controller
 
     public function edit(Club $club)
     {
+//        dd($club->owner_id, auth()->user()->id);
+//        if($club->owner_id !== auth()->user()->id) {
+            $this->authorize('manage_club', $club);
+//        }
 
         $countrySelector = Country::getCountrySelector();
         $citySelector = City::getCitySelector();
@@ -103,6 +111,9 @@ class ClubController extends Controller
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'description' => 'nullable|string|max:1000',
+            'phone_number' => 'nullable|string|max:20',
+            'website' => 'nullable|url|max:255',
 //            'owner_id' => 'required|exists:users,id',
         ]);
 

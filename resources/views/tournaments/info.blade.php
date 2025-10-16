@@ -2,6 +2,6 @@
     <h1>{{ $tournament->name }}</h1>
     <div class="tournament-description">{{ $tournament->description ?? '' }}</div>
     @foreach($tournamentInfo as $info)
-        @include('widgets.prop-line', ['prop' => $info])
+        @include('widgets.prop-line', [ 'label' => $info->label, 'value' => $info->value ])
     @endforeach
 </div>

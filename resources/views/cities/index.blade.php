@@ -4,7 +4,9 @@
     <div class="clm-border gap-1">
         @include('widgets.list-title', [
             'title' => 'Города',
-             'resource' => 'cities'
+             'resource' => 'cities',
+             'ajax' => true,
+             'endpoint' => route('cities.create')
         ])
 
         @include('widgets.index-table', [

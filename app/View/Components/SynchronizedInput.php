@@ -18,6 +18,8 @@ class SynchronizedInput extends Component
     public $placeholder;
     public $required;
     public $readonly;
+    public $onchange;
+    public $step;
 
     public function __construct(
         string $name,
@@ -25,8 +27,11 @@ class SynchronizedInput extends Component
         string $label = '',
         string $value = '',
         string $placeholder = '',
+        string $step = null,
+        string $onchange = null,
         bool $required = false,
-        bool $readonly = false
+        bool $readonly = false,
+
     ) {
         $this->name = $name;
         $this->type = $type;
@@ -35,6 +40,8 @@ class SynchronizedInput extends Component
         $this->placeholder = $placeholder;
         $this->required = $required;
         $this->readonly = $readonly;
+        $this->onchange = $onchange;
+        $this->step = $step;
     }
 
 

@@ -1,5 +1,5 @@
 <div class="data-wrapper hidden"  id="club-requests-data" >
-    @if (auth()->id() === $club->owner_id)
+    @can('manage_club', $club)
         <div class="data ">
 
             @foreach($club->joinRequests()->where('status', 'pending')->orderBy('created_at', 'desc')->get() as $req)
@@ -70,7 +70,7 @@
                 </div>
             @endforeach
         </div>
-    @endif
+    @endcan
 </div>
 
 {{--@if (auth()->id() === $club->owner_id)--}}

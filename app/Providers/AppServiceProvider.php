@@ -5,7 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Http\View\Composers\HeaderMenuComposer;
 use Illuminate\Support\Facades\View;
-
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Pagination\Paginator;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -26,6 +27,24 @@ class AppServiceProvider extends ServiceProvider
                 $view->with('menuItems', $this->getMenuItems());
             }
         });
+
+        Validator::extend('ratio', function ($attribute, $value, $parameters, $validator) {
+            if (count($parameters) < 2) {
+                return false;
+            }
+
+            list($width, $height) = getimagesize($value->getPathname());
+            $expectedRatio = $parameters[0] / $parameters[1];
+            $actualRatio = $width / $height;
+
+            return abs($actualRatio - $expectedRatio) < 0.1;
+        });
+
+        Validator::replacer('ratio', function ($message, $attribute, $rule, $parameters) {
+            return str_replace([':ratio'], ["{$parameters[0]}:{$parameters[1]}"], $message);
+        });
+
+        Paginator::defaultView('vendor.pagination.default');
     }
 
     public function getMenuItems()

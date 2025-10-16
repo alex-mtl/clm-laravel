@@ -1,0 +1,393 @@
+* {
+    box-sizing: border-box;
+}
+.stream-game {
+    margin: 0;
+    font-family: Inter,Arial, sans-serif;
+    /*background-color: #eee;*/
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    /*width: 1280px;*/
+    /*height: 720px;*/
+    /*border: dotted 1px lightgrey;*/
+    padding: 0.1vw;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: transparent;
+    color: white;
+    padding: 0.1vw 0.15vw;
+    /*min-height: 100px;*/
+    height: 2vw;
+}
+
+.topbar .left,
+.topbar .right {
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+}
+
+.topbar .icon {
+    width: 40px;
+    height: 40px;
+    background-color: #444;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+}
+
+.topbar .user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 3.5vh;
+    line-height: 5vh;
+    text-transform: uppercase;
+}
+
+.topbar .user-info img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.main-area {
+    flex: 1;
+    /*background: white;*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    /*color: #999;*/
+}
+
+.player-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.5vw;
+    padding: 0;
+    /*background: transparent;*/
+    background-color: transparent;
+    /*background-color: #222;*/
+    /*flex-wrap: wrap;*/
+    /*margin-bottom: 1vw;*/
+}
+
+
+.player-test {
+    display: flex;
+    flex-direction: row;
+}
+.player-card {
+    width: 9vw;
+    height: 10.2vw;
+    background: #000;
+    color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+    font-size: 12px;
+}
+
+.player-card img {
+    width: 9vw;
+    height: 9vw;
+    object-fit: cover;
+}
+
+.player-card[data-status="killed"] img,
+.player-card[data-status="voted"] img,
+.player-card[data-status="eliminated"] img
+{
+    filter: grayscale(100%);
+    opacity: 0.6;
+}
+
+.player-card .role-icon {
+    position: absolute;
+    top: 0vw;
+    right: 0vw;
+    width: 2.2vw;
+    height: 2.2vw;
+    background-color: transparent;
+
+    border-radius: 0.3vw;
+    font-size: 1.2vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    color: black;
+
+    background-size: 90% 90%;
+    background-position: center;
+    background-repeat: no-repeat;
+
+}
+
+.player-card[data-role="mafia"] .role-icon {
+    background-image: url('/img/game/mafia.svg');
+    background-color: white;
+}
+
+.player-card[data-role="don"] .role-icon {
+    background-image: url('/img/game/don.svg');
+    background-color: white;
+}
+
+.player-card[data-role="sheriff"] .role-icon {
+    background-image: url('/img/game/sheriff.svg');
+    background-color: white;
+}
+
+.best-guess {
+    position: absolute;
+    bottom:1.2vw;
+    margin-left: auto;
+    margin-right: auto;
+}
+.player-card .name {
+    padding: 3px;
+    height: 1.2vw;
+    width: 100%;
+    font-size: 0.8rem;
+    position: absolute;
+    bottom: 0;
+    /*background: #111;*/
+}
+
+.player-card[data-role="don"] .name,
+.player-card[data-role="mafia"] .name
+{
+    background-color: #111;
+}
+
+.player-card[data-role="sheriff"] .name,
+.player-card[data-role="citizen"] .name
+{
+    background-color:var(--clm-btn);
+}
+/*.player-card .number {*/
+/*    position: absolute;*/
+/*    width: 1.5vw;*/
+/*    height: 1.5vw;*/
+/*    line-height: 1.5vw;*/
+/*    top: 0.2vw;*/
+/*    right: 0.2vw;*/
+/*    font-weight: bold;*/
+/*    background-color: rgba(255, 255, 255, 0.8);*/
+/*    !*opacity: 50%;*!*/
+/*    color: black;*/
+/*    justify-content: center;*/
+/*    font-size: 1.2vw;*/
+
+/*    border-radius: 30%;*/
+/*}*/
+
+.player-card .number {
+    position: absolute;
+    width: 0.5vw;
+    height: 0.5vw;
+    line-height: 0.5vw;
+    bottom: 0.5vw;
+    left: 0.5vw;
+    font-weight: bold;
+    /*background-color: white;*/
+    /*opacity: 50%;*/
+    color: white;
+    justify-content: center;
+    font-size: 0.8rem;
+
+    border-radius: 30%;
+}
+
+
+.player-card .protocol-color {
+    position: absolute;
+    top: 0vw;
+    left: 2.3vw;
+    width: 2.2vw;
+    height: 2.2vw;
+    background-color: white;
+
+    border-radius: 0.4vw;
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    color: white;
+}
+
+.player-card .protocol-color.red {
+    background-color: var(--clm-btn);
+}
+
+.player-card .protocol-color.black {
+    background-color: var(--clm-black);
+}
+
+.player-card .player-status {
+    position: absolute;
+    top: 0vw;
+    left: 0vw;
+    width: 2.2vw;
+    height: 2.2vw;
+    background-color: transparent;
+
+    border-radius: 0.4vw;
+    font-size: 0.8vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    color: black;
+
+    background-size: 90% 90%;
+    background-position: center;
+    background-repeat: no-repeat;
+
+}
+.player-card[data-status="killed"] .player-status
+{
+    /*background-image: url('/img/game/killed.svg');*/
+    background-image: url('/img/game/target.svg');
+    background-color: white;
+}
+
+.player-card[data-status="eliminated"] .player-status
+{
+    background-image: url('/img/game/eliminated.svg');
+    background-color: white;
+}
+
+.player-card[data-status="voted"] .player-status
+{
+    background-image: url('/img/game/voted.svg');
+    background-color: white;
+}
+
+.player-card .warn {
+    position: absolute;
+    bottom: 1.1vw;
+    right: 0vw;
+    width: 2.2vw;
+    height: 2.2vw;
+    background-color: transparent;
+
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-size: 90% 90%;
+    background-position: center;
+    background-repeat: no-repeat;
+
+}
+
+.player-card[data-warn="1"] .warn
+{
+    background-image: url('/img/game/warn-1.svg');
+}
+
+.player-card[data-warn="2"] .warn
+{
+    background-image: url('/img/game/warn-2.svg');
+}
+
+.player-card[data-warn="3"] .warn
+{
+    background-image: url('/img/game/warn-3.svg');
+}
+
+.list {
+    display: flex;
+    align-items: center;
+    height: 2vw;
+    line-height: 2vw;
+    min-width: 4vw;
+    /*background-color: var(--clm-text) ;*/
+    /*background-color: rgba(var(--clm-text), 0.5);*/
+    background-color: color-mix(in srgb, var(--clm-text) 50%, transparent);
+    /*opacity: 0.5;*/
+    /*border:dotted 1px lightgrey;*/
+    font-size: 1.2rem;
+    font-weight: bold;
+    gap: 0.2rem;
+    border: 1px solid transparent;
+    padding: 0.2rem;
+    border-radius:0.5rem;
+
+}
+
+.list:not(.best-guess)::before {
+    content: '';
+    display: inline-block;
+    width: 2vw;
+    height: 2vw;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    flex-shrink: 0;
+}
+
+.list[data-type="killed-list"]::before {
+    background-image: url('/img/game/killed.svg');
+    /*background-image: url('/img/game/target.svg');*/
+}
+
+.list span:not(.list-content) {
+    background-color: #706f6c;
+    color: white;
+    border-radius: 0.4rem;
+    width: 1.8rem;
+    height: 1.8rem;
+    line-height: 1.8rem;
+    text-align:center;
+
+}
+
+.list span.black {
+    background-color: var(--clm-black);
+}
+
+.list span.red {
+    background-color: var(--clm-btn);
+}
+
+.list span.sheriff {
+    background-color: darkgreen;
+    color: gold;
+    /*background-image: url('/img/game/sheriff.svg');*/
+
+}
+
+.list[data-type="voted-list"]::before {
+    background-image: url('/img/game/voted.svg');
+}
+
+.list[data-type="don-checks-list"]::before {
+    background-image: url('/img/game/don.svg');
+}
+
+.list[data-type="sheriff-checks-list"]::before {
+    background-image: url('/img/game/sheriff.svg');
+}
+
+.list[data-type="candidate-list"]::before {
+    background-image: url('/img/game/candidate-list.svg');
+}

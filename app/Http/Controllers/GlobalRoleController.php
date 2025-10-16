@@ -24,7 +24,8 @@ class GlobalRoleController extends Controller
     public function index(Club $club)
     {
 
-        $globalRoles = Role::where('scope', 'global')->get();
+//        $globalRoles = Role::where('scope', 'global')->get();
+        $globalRoles = Role::all();
         $cols = collect([
             [
                 'name' => 'Роль',
@@ -35,6 +36,11 @@ class GlobalRoleController extends Controller
                 'name' => 'Код',
                 'class' => 'w-10',
                 'prop' => 'slug'
+            ],
+            [
+                'name' => 'Уровень',
+                'class' => 'w-10',
+                'prop' => 'scope'
             ],
             [
                 'name' => 'Описание',
@@ -87,7 +93,7 @@ class GlobalRoleController extends Controller
     {
         $sidebarMenu = SuperAdminController::getSidebarMenu('roles');
 
-        return view('clubs.roles.form',[
+        return view('global-roles.form',[
             'sidebarMenu' => $sidebarMenu,
             'role' => $role,
             'mode' => 'edit',
@@ -101,6 +107,7 @@ class GlobalRoleController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'required|string',
+            'scope' => 'required|string',
             'description' => 'nullable|string',
             'permissions' => 'nullable|array',
             'permissions.*' => 'nullable|exists:permissions,id'
@@ -111,7 +118,7 @@ class GlobalRoleController extends Controller
             'name' => $request->name,
             'slug' => $request->slug,
             'description' => $request->description,
-            'scope' => 'global'
+            'scope' => $request->scope
         ]);
 
         if ($request->has('permissions')) {
@@ -132,6 +139,7 @@ class GlobalRoleController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'slug' => 'required|string',
+            'scope' => 'required|string',
             'permissions' => 'array',
             'permissions.*' => 'exists:permissions,id'
         ]);
@@ -140,7 +148,7 @@ class GlobalRoleController extends Controller
             'name' => $request->name,
             'slug' => $request->slug,
             'description' => $request->description,
-            'scope' => 'global'
+            'scope' => $request->scope
         ]);
 
         if ($request->has('permissions')) {
@@ -170,6 +178,48 @@ class GlobalRoleController extends Controller
         $user->roles()->syncWithoutDetaching([$role->id]);
 
         return redirect()->route('users.index')->with('success', 'Роль успешно назначена');
+    }    // Назначение роли пользователю
+
+    public function retractRole(Request $request, User $user)
+    {
+        $this->authorize('super_admin', Role::class);
+
+        $request->validate([
+            'role_id' => 'required|exists:roles,id'
+        ]);
+
+        $role = Role::find($request->role_id);
+
+        // Проверка, что роль принадлежит клубу или является глобальной
+        if ($role->scope === 'club') {
+            abort(403, 'Эта форма для глобальных ролей');
+        }
+
+        $user->roles()->detach($role->id);
+
+        return redirect()->route('users.index')->with('success', 'Роль успешно отозвана');
+    }
+
+    public function assignClubRole(Request $request, User $user, Club $club)
+    {
+        $this->authorize('super_admin', Role::class);
+
+        $request->validate([
+            'role_id' => 'required|exists:roles,id',
+        ]);
+
+        $role = Role::find($request->role_id);
+
+        // Проверка, что роль принадлежит клубу или является глобальной
+        if ($role->scope === 'global') {
+            abort(403, 'Эта форма для клубных ролей');
+        }
+
+        $user->roles()->syncWithoutDetaching([
+            $role->id => ['club_id' => $club->id]
+        ]);
+
+        return redirect()->route('manage.clubs.index')->with('success', 'Роль успешно назначена');
     }
 
     // Отзыв роли у пользователя
@@ -225,6 +275,27 @@ class GlobalRoleController extends Controller
         return view('roles.global-form', [
             'sidebarMenu' => $sidebarMenu,
             'roles' => $roles,
+            'role' => new Role(),
+            'user' => $user,
+            'mode' => 'create',
+            'layout' => $layout,
+        ]);
+    }
+
+    public function assignClubRoleForm(Request $request, User $user, Club $club)
+    {
+        $this->authorize('super_admin', Role::class);
+        $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.dashboard';
+
+        $roles = Role::where('scope', 'club')->pluck('name', 'id');
+
+
+        $sidebarMenu = SuperAdminController::getSidebarMenu('clubs');
+
+        return view('roles.club-form', [
+            'sidebarMenu' => $sidebarMenu,
+            'roles' => $roles,
+            'club' => $club,
             'role' => new Role(),
             'user' => $user,
             'mode' => 'create',

@@ -23,6 +23,7 @@ use App\Http\Controllers\RequestTypeController;
 use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\PlayerPagesController;
 use App\Http\Controllers\GamePagesController;
+use App\Http\Controllers\ClubPagesController;
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -47,6 +48,15 @@ Route::get('/verify-email/{token}', function ($token) {
 
     return redirect('/dashboard')->with('success', 'Email verified successfully!');
 })->name('verify.email');
+
+// Страница запроса сброса пароля
+Route::get('/forgot-password', [AuthController::class, 'forgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [AuthController::class, 'sendPasswordResetEmail'])->name('password.email');
+
+// Страница сброса пароля
+Route::get('/reset-password/{token}', [AuthController::class, 'resetPasswordForm'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+
 
 
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
@@ -81,9 +91,17 @@ Route::resource('roles', GlobalRoleController::class)->middleware('auth');
 
 Route::get('/users/{user}/role', [GlobalRoleController::class, 'assignRoleForm'])
     ->name('users.roles.assign');
+Route::get('/users/{user}/club-role/{club}', [GlobalRoleController::class, 'assignClubRoleForm'])
+    ->name('users.roles.club-assign');
 
 Route::post('/users/{user}/role', [GlobalRoleController::class, 'assignRole'])
     ->name('users.roles.store');
+Route::post('/users/{user}/role/retract', [GlobalRoleController::class, 'retractRole'])
+    ->name('users.roles.retract');
+Route::post('/users/{user}/role/{club}', [GlobalRoleController::class, 'assignClubRole'])
+    ->name('users.club-roles.store');
+
+
 
 
 Route::get('/set-locale/{locale}', function ($locale) {
@@ -96,6 +114,14 @@ Route::get('/set-locale/{locale}', function ($locale) {
 //Route::get('/', fn() => redirect('/login'));
 Route::get('/', function () {
     return view('pages.home');
+});
+
+Route::get('/facebook/privacy', function () {
+    return view('pages.privacy-facebook');
+});
+
+Route::get('/delete-account-info', function () {
+    return view('pages.delete-account-info');
 });
 
 
@@ -137,6 +163,8 @@ Route::prefix('clubs/{club}')->middleware(['auth'])->group(function() {
         Route::get('/', [ClubMemberController::class, 'index'])->name('clubs.members.index');
         Route::post('/', [ClubMemberController::class, 'store'])->name('clubs.members.store');
         Route::delete('/{user}', [ClubMemberController::class, 'destroy'])->name('clubs.members.destroy');
+        Route::get('/remove/{user}', [ClubMemberController::class, 'removeForm'])
+            ->name('clubs.members.removeForm');
     });
 });
 
@@ -197,6 +225,11 @@ Route::post('/tournaments/{tournament}/requests/{request}/approve', [TournamentP
 Route::post('/tournaments/{tournament}/requests/{request}/decline', [TournamentPagesController::class, 'applicationDecline'])
     ->name('tournaments.requests.decline');
 
+Route::get('/tournaments/{tournament}/partcipants/{user}/remove', [TournamentPagesController::class, 'confimationForm'])
+    ->name('tournaments.partcipants.removeForm');
+Route::post('/tournaments/{tournament}/partcipants/{user}/remove', [TournamentPagesController::class, 'participantRemove'])
+    ->name('tournaments.partcipants.remove');
+
 
 Route::get('/tournaments/{tournament}/judges/create', [TournamentPagesController::class, 'judgeCreate'])
     ->name('tournaments.judges.create');
@@ -210,14 +243,48 @@ Route::put('/tournaments/{tournament}/games/wizard', [TournamentPagesController:
     ->name('tournaments.events.update');
 
 
+
+
 Route::get('/players', [PlayerPagesController::class, 'index'])
     ->name('players.index');
+
+Route::get('/players/{player}', [PlayerPagesController::class, 'show'])
+    ->name('players.show');
 
 Route::get('/games/{game}/host', [GamePagesController::class, 'host'])
     ->name('games.host');
 
+Route::get('/stream/{key}', [GamePagesController::class, 'stream'])
+    ->name('games.stream');
+
+Route::get('/games/{game}/stream', [GamePagesController::class, 'streamSettingsForm'])
+    ->name('games.stream.settings');
+
+Route::post('/games/{game}/stream', [GamePagesController::class, 'streamSettingsUpdate'])
+    ->name('games.stream.update');
+
+Route::get('/games/{game}/state/{key}', [GamePagesController::class, 'streamState'])
+    ->name('games.stream.state');
+
+Route::post('/games/{game}/stream/start', [GamePagesController::class, 'streamStart'])
+    ->name('games.stream.start');
+
+Route::post('/games/{game}/warn/{slot}', [GamePagesController::class, 'warn'])
+    ->name('games.slots.warn');
+
+Route::post('/games/{game}/speaker/{slot}', [GamePagesController::class, 'speaker'])
+    ->name('games.slots.speaker');
+
+Route::post('/games/{game}/candidate/{slot}', [GamePagesController::class, 'candidate'])
+    ->name('games.slots.candidate');
+
 Route::post('/games/{game}/host', [GamePagesController::class, 'update'])
     ->name('games.update');
+
+Route::post('/marks-calc', [GamePagesController::class, 'marksCalc'])
+    ->name('games.marksCalc');
+
+
 
 Route::post('/games/{game}/phase', [GamePagesController::class, 'phase'])
     ->name('games.phase');
@@ -229,6 +296,42 @@ Route::get('/games/{game}/slots/{slot}/eliminate', [GamePagesController::class, 
 Route::post('/games/{game}/slots/{slot}/eliminate', [GamePagesController::class, 'eliminate'])
     ->name('games.slots.eliminate');
 
+Route::get('/games/{game}/voting', [GamePagesController::class, 'votingForm'])
+    ->name('games.votingForm');
+
+Route::post('/games/{game}/voting', [GamePagesController::class, 'voting'])
+    ->name('games.voting');
+
+Route::get('/games/{game}/shooting', [GamePagesController::class, 'shootingForm'])
+    ->name('games.shootingForm');
+
+Route::post('/games/{game}/shooting', [GamePagesController::class, 'shooting'])
+    ->name('games.shooting');
+
+Route::get('/games/{game}/don-check', [GamePagesController::class, 'donCheckForm'])
+    ->name('games.donCheckForm');
+
+Route::post('/games/{game}/don-check', [GamePagesController::class, 'donCheck'])
+    ->name('games.donCheck');
+
+Route::get('/games/{game}/protocol-color', [GamePagesController::class, 'protocolColorForm'])
+    ->name('games.protocolColorForm');
+
+Route::post('/games/{game}/protocol-color', [GamePagesController::class, 'protocolColor'])
+    ->name('games.protocolColor');
+
+Route::get('/games/{game}/best-guess', [GamePagesController::class, 'bestGuessForm'])
+    ->name('games.bestGuessForm');
+
+Route::post('/games/{game}/best-guess', [GamePagesController::class, 'bestGuess'])
+    ->name('games.bestGuess');
+
+Route::get('/games/{game}/sheriff-check', [GamePagesController::class, 'sheriffCheckForm'])
+    ->name('games.sheriffCheckForm');
+
+Route::post('/games/{game}/sheriff-check', [GamePagesController::class, 'sheriffCheck'])
+    ->name('games.sheriffCheck');
+
 Route::get('/games/{game}/slots/{slot}/restore', [GamePagesController::class, 'restoreForm'])
     ->name('games.slots.restoreForm');
 
@@ -238,12 +341,28 @@ Route::post('/games/{game}/slots/{slot}/restore', [GamePagesController::class, '
 Route::get('/games/{game}/host/reset-timer', [GamePagesController::class, 'resetTimerForm'])
     ->name('games.host.resetTimerForm');
 
-Route::get('/test-email', function () {
-    Mail::raw('Test email content', function ($message) {
-        $message->to('kim.alexander.ca@gmail.com')
-            ->subject('Test from Laravel');
-    });
+Route::get('/games/{game}/delete', [GamePagesController::class, 'deleteForm'])
+    ->name('games.deleteForm');
+Route::post('/games/{game}/delete', [GamePagesController::class, 'delete'])
+    ->name('games.delete');
 
-    return 'Email sent!';
-});
+//Route::get('/test-email', function () {
+//    Mail::raw('Test email content', function ($message) {
+//        $message->to(env('TEST_EMAIL'))
+//            ->subject('Test from Laravel');
+//    });
+//
+//    return 'Email sent!';
+//});
+
+Route::get('/manage/clubs', [ClubPagesController::class, 'index'])
+    ->middleware('auth')
+    ->name('manage.clubs.index');
+
+//
+//Route::post('/telegram/webhook', [TelegramController::class, 'webhook'])
+//    ->middleware('telegram.bot');
+//
+//Route::get('/telegram/data', [TelegramController::class, 'getData'])
+//    ->middleware('telegram.bot');
 

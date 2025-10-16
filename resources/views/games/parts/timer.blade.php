@@ -19,18 +19,22 @@
         'callback '=> "timerReset",
     ])
 
-    @include('widgets.inline-btn', [
-        'title' => 'Дать слово',
-        'icon' => 'account_circle',
-        'class' => 'inline-btn',
-        'endpoint' => 'setSpeakerOptions',
-        'callback '=> "setSpeaker",
-    ])
+{{--    @if($game->props['phase'] === 'day')--}}
+{{--        @include('widgets.inline-btn', [--}}
+{{--            'title' => 'Дать слово '.($game->props['phase'] !== 'day'),--}}
+{{--            'icon' => 'account_circle',--}}
+{{--            'class' => 'inline-btn',--}}
+{{--            'endpoint' => 'setSpeakerOptions()',--}}
+{{--            'callback '=> "setSpeaker",--}}
+{{--            'hidden' => ($game->props['phase'] !== 'day') ? 'true' : 'false'--}}
+{{--        ])--}}
+{{--    @endif--}}
 
     @include('widgets.inline-btn', [
         'title' => 'Следующий',
         'icon' => 'expand_circle_right',
-        'class' => 'inline-btn',
+        'class' => 'inline-btn '. (in_array($game->props['phase-code'],
+            ['DAY-SPEECH', 'SPEECH', 'NIGHT-CAHOOT', 'SHERIFF-SIGN', 'FREE']) ? 'active' : ''),
         'endpoint' => 'nextSpeaker()'
     ])
 
@@ -109,6 +113,6 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         timer = Alpine.$data(document.querySelector('.timer'));
-        timer.start();
+        timer.start({{  $game->props['timer'] ?? 0 }});
     });
 </script>

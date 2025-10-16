@@ -1,11 +1,26 @@
 <div class="data-wrapper {{ session('tab') === 'judges' ? '' : 'hidden' }}"  id="tournament-judges-data" >
-    @include('widgets.list-title', [
-        'title' => 'Судьи',
-         'resource' => 'tournaments.judges',
-         'resourceItem' => $tournament,
-         'endpoint' => route('tournaments.judges.create', $tournament),
-         'ajax' => true
-    ])
+{{--    @include('widgets.list-title', [--}}
+{{--        'title' => '',--}}
+{{--         'resource' => 'tournaments.judges',--}}
+{{--         'resourceItem' => $tournament,--}}
+{{--         'endpoint' => route('tournaments.judges.create', $tournament),--}}
+{{--         'ajax' => true--}}
+{{--    ])--}}
+    <div class="flex-row gap-2 space-between w100">
+        <div class="flex">
+            <h1>Судьи</h1>
+
+        </div>
+        @can('manage_tournament', $tournament)
+            <x-ajax-modal
+                endpoint="{{ route('tournaments.judges.create', $tournament) }}"
+                title="Добавить судью"
+                icon="add_circle"
+                {{--                class="inline-btn"--}}
+            />
+        @endcan
+
+    </div>
 
     <div class="data" >
         @foreach($tournament->judges as $judge)

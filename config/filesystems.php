@@ -1,4 +1,4 @@
-<?php
+/public<?php
 
 return [
 

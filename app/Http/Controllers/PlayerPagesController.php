@@ -11,9 +11,79 @@ use Illuminate\Support\Facades\Hash;
 
 class PlayerPagesController extends Controller
 {
+    public $sidebarMenu;
     public function __construct()
     {
         $this->middleware('auth');
+
+        $this->sidebarMenu = collect([
+            [
+                'icon' => 'readiness_score',
+                'name' => 'Игровая статистика',
+                'action' => 'stats',
+                'handler' => false,
+                'active' => false,
+            ],
+
+            [
+                'icon' => 'groups',
+                'name' => 'Клубы',
+                'action' => 'clubs',
+                'handler' => false,
+                'active' => false,
+            ],
+
+            [
+                'icon' => 'diversity_1',
+                'name' => 'Друзья',
+                'action' => 'friends',
+                'handler' => false,
+                'active' => false,
+            ],
+            [
+                'icon' => 'trophy',
+                'name' => 'Турниры',
+                'action' => 'tournaments',
+                'handler' => false,
+                'active' => false,
+            ],
+
+            [
+                'icon' => 'interpreter_mode',
+                'name' => 'Игры',
+                'action' => 'games',
+                'handler' => false,
+                'active' => false,
+            ],
+
+//            [
+//                'icon' => 'scoreboard',
+//                'name' => 'Результаты',
+//                'action' => 'results',
+//                'handler' => false,
+//                'active' => false,
+//            ],
+//
+//            [
+//                'icon' => 'balance',
+//                'name' => 'Судьи',
+//                'action' => 'judges',
+//                'handler' => false,
+//                'active' => false,
+//            ],
+        ])->map(function($item) { // Changed from fn() to full function syntax
+            return (object)$item;
+        });
+    }
+
+    public function getSidebarMenu($activeTab)
+    {
+        $sidebarMenu = collect($this->sidebarMenu)->map(function($item) use ($activeTab) { // Changed from fn() to full function syntax
+            $item = (object)$item;
+            $item->active = $item->action == $activeTab;
+            return $item;
+        });
+        return $sidebarMenu;
     }
     /**
      * Display a listing of the resource.
@@ -29,18 +99,7 @@ class PlayerPagesController extends Controller
                 'default' => '0',
             ],
 
-            [
-                'name' => "Игры",
-                'class' => 'w-5 center',
-                'prop' => 'games',
-                'default' => '0',
-            ],
-            [
-                'name' => "Турниры",
-                'class' => 'w-5 center',
-                'prop' => 'tournaments',
-                'default' => '0',
-            ],
+
 
         ])->map(fn($item) => (object)$item);
         $users = User::latest()->paginate(30);
@@ -51,75 +110,27 @@ class PlayerPagesController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        $user = auth()->user();
-        $clubSelector = $user->getClubSelector();
-        $countrySelector = Country::getCountrySelector();
-        $citySelector = City::getCitySelector();
-        $sidebarMenu = SuperAdminController::getSidebarMenu('users');
-        return view('users.show', [
-            'sidebarMenu' => $sidebarMenu,
-            'clubSelector' => $clubSelector,
-            'countrySelector' => $countrySelector,
-            'citySelector' => $citySelector,
-            'styles' => ['user-show.css'],
-            'user' => new User(),
-            'mode' => 'create'
-        ]);
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'country_id' => 'nullable|exists:countries,id',
-            'city_id' => 'nullable|exists:cities,id'
-        ]);
-
-        $validatedData =
-        [
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ];
-
-        if ($request->hasFile('avatar')) {
-            $validatedData['avatar'] = User::saveAvatar($request, );
-        }
-
-        User::create($validatedData);
-
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
-    }
 
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show(User $player)
     {
-        $clubSelector = Club::getClubSelector();
-        $citySelector = City::getCitySelector();
-        $countrySelector = Country::getCountrySelector();
-        $sidebarMenu = SuperAdminController::getSidebarMenu('users');
-        return view('users.show', [
-            ...compact('user'),
+        if ($tab = request()->query('tab') ?? null) {
+            session()->flash('tab', $tab);
+        }
+
+        $sidebarMenu = $this->getSidebarMenu(session('tab') ?? 'stats');
+        $playerInfo = $player->getPlayerInfo();
+//        $sidebarMenu = SuperAdminController::getSidebarMenu('users');
+        return view('players.show', [
+            'player' => $player,
             'sidebarMenu' => $sidebarMenu,
-            'clubSelector' => $clubSelector,
-            'citySelector' => $citySelector,
-            'countrySelector' => $countrySelector,
-            'styles' => ['user-show.css'],
-            'countries' => Country::all(),
-            'cities' => City::all(),
+            'playerInfo' => $playerInfo,
+//            'styles' => ['player-show.css'],
+//            'countries' => Country::all(),
+//            'cities' => City::all(),
             'mode' => 'show'
         ]);
     }

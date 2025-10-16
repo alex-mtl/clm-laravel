@@ -1,8 +1,12 @@
 <div class="tile">
-    <div class="title-wrapper">
-        <div class="component-4">
-            <div class="div">Регистрация</div>
-        </div>
+    <div class="title-wrapper tournament-banner"
+         @if($tournament->banner)
+             style="--clm-background-image: url('{{ asset('storage/' . $tournament->banner) }}')"
+         @endif
+    >
+{{--        <div class="component-4">--}}
+{{--            <div class="div">Регистрация</div>--}}
+{{--        </div>--}}
     </div>
     <div class="details-wrapper">
         <div class="details">
@@ -31,7 +35,7 @@
             <a href="/tournaments/{{ $tournament->id }}" class="btn view-btn">
                 <div class="">Подробнее</div>
             </a>
-            <a href="/tournaments/{{ $tournament->id }}/register" class="btn btn-orange register-btn">
+            <a href="/tournaments/{{ $tournament->id }}?tab=requests" class="btn btn-orange register-btn">
                 <div class="">Регистрация</div>
             </a>
         </div>

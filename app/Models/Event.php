@@ -9,6 +9,10 @@ class Event extends Model
 {
     use HasFactory;
 
+    protected $attributes = [
+        'tables' => 1
+    ];
+
     protected $fillable = [
         'club_id',
         'tournament_id',
@@ -19,6 +23,7 @@ class Event extends Model
         'games_quota',
         'date_start',
         'date_end',
+        'tables'
     ];
 
     protected $casts = [
@@ -28,12 +33,12 @@ class Event extends Model
 
     public function getDateStartDisplayAttribute()
     {
-        return $this->date_start->format('Y-m-d'); // or ->toDateString()
+        return $this->date_start?->format('Y-m-d'); // or ->toDateString()
     }
 
     public function getDateEndDisplayAttribute()
     {
-        return $this->date_end->format('Y-m-d'); // or ->toDateString()
+        return $this->date_end?->format('Y-m-d'); // or ->toDateString()
     }
 
     public function club()
@@ -50,4 +55,6 @@ class Event extends Model
     {
         return $this->hasMany(Game::class);
     }
+
+
 }

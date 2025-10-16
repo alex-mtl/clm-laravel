@@ -17,7 +17,30 @@ class GameParticipant extends Pivot
         'user_id',
         'role',
         'slot',
-        'status'
+        'status',
+        'win',
+        'score_base',
+        'score_1',
+        'score_2',
+        'score_3',
+        'score_4',
+        'score_5',
+        'score_total',
+        'mark',
+        'mark_number',
+        'warns'
+    ];
+
+    protected $casts = [
+        'win' => 'integer',
+        'score_base' => 'decimal:0',
+        'score_1' => 'decimal:2',
+        'score_2' => 'decimal:2',
+        'score_3' => 'decimal:2',
+        'score_4' => 'decimal:2',
+        'score_5' => 'decimal:2',
+        'mark_number' => 'decimal:0',
+        'score_total' => 'decimal:2'
     ];
 
     public function game()

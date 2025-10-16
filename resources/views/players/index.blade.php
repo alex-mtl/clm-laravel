@@ -11,7 +11,10 @@
                         @else
                             <div class="col-{{ $idx }} {{ $col->class ?? 'w-10' }}">{{ $col->name ?? '' }}</div>
                         @endif
+
                     @endforeach
+                    <div  class="w-5 center">Игры</div>
+                    <div  class="w-5 center">Турниры</div>
                 </div>
                 <div class="flex-column ">
                     @foreach($users as $user)
@@ -20,11 +23,14 @@
                             <div class="avatars-wrapper">
                             <!-- Column 1: User Avatar -->
                                 <div class="user-avatar">
-                                    <a href="{{ route('users.show', $user->id) }}">
+                                    <a href="{{ route('players.show', $user->id) }}">
                                         @if($user->avatar)
                                             <img src="{{ asset('storage/'.$user->avatar) }}"
                                                  alt="{{ $user->name }}"
-                                                 class="rounded-full h-16 w-16 object-cover">
+
+                                                 class="rounded-full h-16 w-16 object-cover"
+                                                 onerror="this.onerror=null; this.src='/img/no-avatar.svg';"
+                                            >
                                         @else
                                             <img src="/img/no-avatar.svg"
                                                  alt="{{ $user->name }}"
@@ -58,7 +64,7 @@
                             <!-- Column 3: User Details -->
                             <div class="user-details ml-4 flex-1">
                                 <div class="flex-column items-center">
-                                    <a href="{{ route('users.show', $user->id) }}" class="">
+                                    <a href="{{ route('players.show', $user->id) }}" class="">
                                         {{ $user->name }}
                                     </a>
                                     @if($user->first_name || $user->last_name)
@@ -80,6 +86,8 @@
                         @foreach ($cols as $idx => $col)
                             <div  class="{{ $col->class ?? 'w-10' }}">{{ data_get($user, $col->prop, $col->default ?? '') }}</div>
                         @endforeach
+                            <div  class="w-5 center">{{ $user->games->count() }}</div>
+                            <div  class="w-5 center">{{ $user->tournaments->count() }}</div>
                         </div>
                     @endforeach
                 </div>

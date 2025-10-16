@@ -1,10 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="club-view">
+{{--    <div class="club-view">--}}
+    <div class="flex-start gap-2 mt-1 mb-1">
 
-        <div class="frame-parent">
-            <div class="frame-wrapper">
+        <div class="flex-column gap-1 w-30 clm-border relative">
+
                 @include('clubs.join-leave-edit')
                 <div class="frame-group">
                     <div class="rectangle-parent">
@@ -16,66 +17,64 @@
                             <div class="div7">{{ $club?->country?->name }} • Основан в 2023 году</div>
                         </div>
                     </div>
-                    <div class="div8">Профессиональный клуб мафии с многолетней историей. Мы объединяем игроков всех уровней
-                        для участия в турнирах и регулярных игровых вечерах. Наша цель — развитие спортивной мафии и
-                        создание дружественного сообщества.
-                    </div>
-                    <div class="prop-line">
-                        <div class="prop-value">Город:</div>
-                        <div class="prop-label">{{ $club?->city?->name }}</div>
-                    </div>
-                    <div class="prop-line">
-                        <div class="prop-value">Веб-сайт:</div>
-                        <div class="prop-label">{{ $club->website ?? $club->name.'.clm.com' }} <a href="{{ $club->website ?? '#' }}" target="_blank">&#x1F517;</a></div>
-                    </div>
-                    <div class="prop-line">
-                        <div class="prop-value">Email:</div>
-                        <div class="prop-label">{{ $club->email ?? $club->name.'@clm.com' }}</div>
-                    </div>
-
-                    <div class="prop-line">
-                        <div class="prop-value">Телефон:</div>
-                        <div class="prop-label">{{ $club->phone_number }}</div>
-                    </div>
-
-                    <div class="prop-line">
-                        <div class="prop-value">Языки:</div>
-                        <div class="prop-label">Русский, English</div>
-                    </div>
-
+                    <div class=""> {!! nl2br(e($club->description)) !!} </div>
                 </div>
-            </div>
-{{--            <div class="auto-layout-horizontal5">--}}
-{{--                <b class="b">Участник</b>--}}
-{{--            </div>--}}
+                <div class="prop-line">
+                    <div class="prop-value">Город:</div>
+                    <div class="prop-label">{{ $club?->city?->name }}</div>
+                </div>
+                <div class="prop-line">
+                    <div class="prop-value">Веб-сайт:</div>
+                    <div class="prop-label">
+                        {{ str_replace(['https://', 'http://'], '', $club->website ?? $club->name . '.clm.com') }}
+                        <a href="{{ $club->website ?? '#' }}" target="_blank">&#x1F517;</a>
+                    </div>
+                </div>
+                <div class="prop-line">
+                    <div class="prop-value">Email:</div>
+                    <div class="prop-label">{{ $club->email ?? $club->name.'@clm.com' }}</div>
+                </div>
+
+                <div class="prop-line">
+                    <div class="prop-value">Телефон:</div>
+                    <div class="prop-label">{{ $club->phone_number }} <a href="tel:{{ $club->phone_number }}" target="_blank">&nbsp &#x260F;</a></div>
+                </div>
+
+                <div class="prop-line">
+                    <div class="prop-value">Языки:</div>
+                    <div class="prop-label">Русский, English</div>
+                </div>
 
 
         </div>
-        <div class="club-details">
+
+
+{{--        <div class="club-details">--}}
+        <div class="flex-column gap-1 w-50 clm-border">
             <div class="club-metrics">
-            <div class="metric">
-                <div class="parent">
-                    <b class="soul-club">{{ $club->members->count() }}</b>
-                    <div class="div14">Участников</div>
-                </div>
+            <div class="clm-border flex-column gap-1 ta-center w-10">
+
+                <span><b class="">{{ $club->members->count() }}</b></span>
+                <div class="">Участников</div>
+
             </div>
-            <div class="metric">
-                <div class="container">
-                    <b class="toronto">2456</b>
-                    <div class="div7">рейтинг</div>
-                </div>
+            <div class="clm-border flex-column gap-1 ta-center w-10">
+
+                <span><b class="">{{ $club->rating ?? 0 }}</b></span>
+                <div class="">рейтинг</div>
+
             </div>
-            <div class="metric">
-                <div class="parent1">
-                    <b class="soul-club">23</b>
-                    <div class="div14">Турниров проведено</div>
-                </div>
+            <div class="clm-border flex-column gap-1 ta-center w-10">
+
+                <span><b class="">{{ $club->tournaments->count() ?? 0 }}</b></span>
+                <div class="">Турниров</div>
+
             </div>
-            <div class="metric">
-                <div class="din-ais-parent">
-                    <b class="soul-club">{{ $club->owner->name }}</b>
-                    <div class="div14">Глава клуба</div>
-                </div>
+            <div class="clm-border flex-column gap-1 ta-center w-10">
+
+                <span><b class="">{{ $club->owner->name }}</b></span>
+                <div class="">Глава</div>
+
             </div>
             </div>
             <div class="club-content">
@@ -84,11 +83,11 @@
                         Участники
 
                     </div>
-                    @if (auth()->id() === $club->owner_id)
+                    @can('manage_club', $club)
                         <div class="menu-item {{ session('tab') === 'requests' ? 'active' : '' }}" data-action="requests">
                             Запросы
                         </div>
-                    @endif
+                    @endcan
                     <div class="menu-item {{ session('tab') === 'events' ? 'active' : '' }}" data-action="events">Мероприятия</div>
                     <div class="menu-item {{ session('tab') === 'tournaments' ? 'active' : '' }}" data-action="tournaments">Турниры</div>
                     <div class="menu-item {{ session('tab') === 'games' ? 'active' : '' }}" data-action="games">Игры</div>

@@ -31,6 +31,22 @@
                 :readonly="$mode === 'show'"
                 placeholder="club_player"
             />
+
+            <x-custom-dropdown
+                name="scope"
+                :options="['global' => 'Глобальный', 'club'=>'Клубный']"
+                selected="{{ old('scope', $role->scope ?? 'club' ) }}"
+                :readonly="$mode === 'show'"
+                label="Уровень"
+            />
+{{--            <x-synchronized-input--}}
+{{--                name="scope"--}}
+{{--                label="Уровень (global/club)"--}}
+{{--                value="{{ old('scope', $role->scope) }}"--}}
+{{--                required--}}
+{{--                :readonly="$mode === 'show'"--}}
+{{--                placeholder="club"--}}
+{{--            />--}}
             <x-synchronized-input
                 name="description"
                 label="Описание"
