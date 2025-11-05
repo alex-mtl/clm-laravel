@@ -1,9 +1,9 @@
-<script>
-    window.csrfToken = '{{ csrf_token() }}';
-</script>
 @extends('layouts.custom')
 
 @section('content')
+    <script>
+        window.csrfToken = '{{ csrf_token() }}';
+    </script>
 <div class="stream-game">
     @csrf
     <div class="flex-start gap-05 space-between">

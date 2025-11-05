@@ -1,13 +1,32 @@
-{{-- resources/views/dashboard.blade.php --}}
+
 @extends('layouts.app')
+
+
 
 @section('content')
     <div class="content-main">
+        <script>
+            @php
+                $toasts = session('toasts') ?? [];
+            @endphp
 
-    <p>{{ auth()->user()->name }} уверены что хотите выйти?</p>
+            let toasts = @json($toasts);
 
-    <form method="POST" action="{{ route('logout') }}">
+        </script>
+
+    <p>Забыли пароль?</p>
+
+    <form method="POST" action="{{ route('password.email') }}">
         @csrf
+        <x-synchronized-input
+            name="email"
+            type="email"
+            label="Email"
+            value="{{ old('email', '') }}"
+            placeholder="john.doe@example.com"
+            required
+            :readonly="false"
+        />
         <button class='btn'type="submit">Сбросить</button>
     </form>
     </div>

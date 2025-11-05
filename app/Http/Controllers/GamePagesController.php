@@ -17,7 +17,15 @@ class GamePagesController extends Controller
         $gameRoles = Game::ROLES;
         $slots = Game::slots;
 
-        $day = $game->props['day'] ?? 0;
+        if(!isset($game->props['day'])) {
+            $props = $game->props;
+            $props['day'] = 0;
+            $game->update([
+                'props' => $props
+            ]);
+        }
+
+        $day = $game->props['day'];
 
         $nominees = $game->props['days']['D'.$day]['nominees'] ?? [];
         if(empty($game->props['phase-code']) && $game->props['phase'] == 'shuffle-slots') {
@@ -33,7 +41,40 @@ class GamePagesController extends Controller
         }
 //        dd( $game->props['phase-code'] );
 
-        foreach ($game->slots()->get() as $slot) {
+        $slots = $game->slots()->get();
+
+        if ($slots->isEmpty()) {
+            // Создаем слоты по умолчанию
+            for ($i = 1; $i <= 10; $i++) { // или нужное количество слотов
+                GameParticipant::updateOrCreate(
+                    [
+                        'game_id' => $game->id,
+                        'slot' => $i
+                    ],
+                    [
+                        'role' => 'citizen',
+                        'role_title' => Game::ROLES['citizen'] ?? 'Гражданин', // исправлено на role_title
+                        'status' => 'alive',
+                        'warns' => 0,
+                        'avatar' => null,
+                        'candidate' => 0,
+                        'score_base' => 0,
+                        'score_1' => 0,
+                        'score_2' => 0,
+                        'score_3' => 0,
+                        'score_4' => 0,
+                        'score_5' => 0,
+                        'score_total' => 0,
+                        'mark' => 'zero',
+                    ]
+                );
+            }
+
+            // Перезагружаем слоты после создания
+            $slots = $game->slots()->get();
+        }
+
+        foreach ($slots as $slot) {
 //            dd($participant);
             $user = User::find($slot->user_id);
             if (!empty($user->avatar)) {
@@ -60,6 +101,7 @@ class GamePagesController extends Controller
                 'mark' => $slot->mark ?? 'zero',
             ];
         }
+
 
 //        dd($slots);
 //        dd($slots);
@@ -628,11 +670,14 @@ class GamePagesController extends Controller
         $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
         $day = $game->props['day'] ?? 0;
         $dayOptions = ['D0' => "День 0"];
-        for($i=1; $i<=10; $i++) {
-            if(array_key_exists('D'.$i, $game->props['days'])) {
-                $dayOptions['D'.$i] = "День ".$i;
+        if(!empty($game->props['days'] ?? [])) {
+            for($i=1; $i<=10; $i++) {
+                if(array_key_exists('D'.$i, $game->props['days'])) {
+                    $dayOptions['D'.$i] = "День ".$i;
+                }
             }
         }
+
         $nominees = $game->props['days']['D'.$day]['nominees'] ?? [];
         $votedList = $game->props['days']['D'.$day]['voting']['result'] ?? [];
         $slots = $game->slots()->get();
@@ -725,7 +770,7 @@ class GamePagesController extends Controller
         $day = $game->props['day'] ?? 1;
         $dayOptions = ['D1' => "Ночь 1"];
         for($i=2; $i<=10; $i++) {
-            if(array_key_exists('D'.$i, $game->props['days'])) {
+            if(array_key_exists('D'.$i, $game->props['days'] ?? [])) {
                 $dayOptions['D'.$i] = "Ночь ".$i;
             }
         }
@@ -826,12 +871,13 @@ class GamePagesController extends Controller
         $sheriffCheck = $game->props['days']['D'.$day]['sheriff-check']['target'] ?? 0;
 
 
+
         return view('games.forms.sheriff-check-form', [
             'game' => $game,
             'roles' => $roles,
             'dayOptions' => $dayOptions,
             'sheriffCheckDay' => 'D'.$day,
-            'sheriffCheck' => $sheriffCheck,
+            'sheriffCheck' => ($sheriffCheck === 'X') ? 0 : $sheriffCheck,
             'layout' => $layout,
             'mode' => 'show',
         ]);
@@ -1020,24 +1066,50 @@ class GamePagesController extends Controller
 
     }
 
-    public function warn(Game $game, int $slot)
+    public function warn(Request $request, Game $game, int $slot)
     {
         $slotParticipant = $game->slots()->where('slot', $slot)->first();
 
         $warns = $slotParticipant->warns ?? 0;
-        if($warns<4) {
-            $warns++;
-            $slotParticipant->update([
-                'warns' => $warns
-            ]);
+        if($request->has('remove') && $request->input('remove')) {
+            if($warns > 0) {
+                if ($warns === 4) {
+                    if ($slotParticipant->status === 'eliminated') {
+                        $eliminatedList = $game->props['eliminated'] ?? [];
+                        $eliminatedList = array_diff($eliminatedList, [$slot]);
+                        $game->update([
+                            'props' => array_merge($game->props, [
+                                'eliminated' => $eliminatedList
+                            ])
+                        ]);
+                        $slotParticipant->update([
+                            'status' => 'alive'
+                        ]);
+                    }
+                }
+                $warns--;
+                $slotParticipant->update([
+                    'warns' => $warns
+                ]);
 
-            if($warns === 4) {
-                $status = $this->slotEliminate($game, $slot, 'eliminated');
+            }
+        } else {
+            if($warns<4) {
+
+                $warns++;
+                $slotParticipant->update([
+                    'warns' => $warns
+                ]);
+
+                if ($warns === 4) {
+                    $status = $this->slotEliminate($game, $slot, 'eliminated');
+                }
             }
         }
 
         return response()->json([
             'slot' => $slot,
+            'slot-status' => $slotParticipant->status,
             'warns' => $warns,
             'status' => 'ok'
         ]);
@@ -1270,6 +1342,7 @@ class GamePagesController extends Controller
         if($donCheck > 0) {
             $role = $game->slots()->where('slot', $donCheck)->first()->role;
         } else {
+            $donCheck = 'X';
             $role = 'citizen';
         }
         $result = ($role === 'sheriff') ? 'yes' : 'no';
@@ -1384,6 +1457,7 @@ class GamePagesController extends Controller
         if($sheriffCheck > 0) {
             $role = $game->slots()->where('slot', $sheriffCheck)->first()->role;
         } else {
+            $sheriffCheck = 'X';
             $role = 'citizen';
         }
         $result = (in_array($role, ['mafia', 'don'])) ? 'yes' : 'no';

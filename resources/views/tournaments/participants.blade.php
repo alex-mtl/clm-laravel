@@ -2,6 +2,21 @@
     {{--                    <div class="parent2">--}}
         {{--                        <div class="div7">{{ $club->members->count() }} участников</div>--}}
         {{--                    </div>--}}
+    <div class="title">
+        @can('manage_tournament', $tournament)
+            @if($tournament->phase === 'registration')
+                @include('widgets.btn', ['btn' => (object)[
+                    'name' => 'Исключить игровые пары',
+                    'icon' => 'social_distance',
+                    'class' => 'inline-btn ml-auto',
+                    'endpoint' => route('tournaments.couples.create', ['%s']),
+                    'endpoint_params' => [$tournament->id],
+
+                    ]
+                ])
+            @endif
+        @endcan
+    </div>
     <div class="data" >
         @foreach($tournament->participants as $user)
         <div class="user-row">

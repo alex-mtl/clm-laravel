@@ -13,6 +13,8 @@ use App\Models\RequestType;
 use App\Models\Request as RequestModel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
+use App\Services\TournamentScheduler;
+use App\Models\TournamentCouple;
 
 class TournamentPagesController extends Controller
 {
@@ -192,6 +194,24 @@ class TournamentPagesController extends Controller
         ]);
     }
 
+    public function coupleCreate(Tournament $tournament)
+    {
+        $this->authorize('manage_tournament', $tournament);
+
+        $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
+
+        $couples = $tournament->forbiddenCouples()->with(['user1:id,name', 'user2:id,name'])->get();
+
+        return view('tournaments.forms.couples-form', [
+            compact('tournament'),
+            'couples' => $couples,
+            'layout' => $layout,
+            'mode' => 'create',
+            'tournament' => $tournament,
+            'styles' => ['tournaments.css']
+        ]);
+    }
+
     public function wizardForm(Tournament $tournament)
     {
         $this->authorize('manage_tournament', $tournament);
@@ -218,6 +238,38 @@ class TournamentPagesController extends Controller
             'layout' => $layout,
             'mode' => 'edit',
             'tournament' => $tournament,
+            'styles' => ['tournaments.css']
+        ]);
+    }
+
+    public function scheduleForm(Tournament $tournament)
+    {
+        $this->authorize('manage_tournament', $tournament);
+
+        $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
+
+        $tables = floor($tournament->players_quota / 10);
+        $rounds = 10;
+        $scheduler = new TournamentScheduler($tournament, floor($tournament->players_quota / 10), $rounds);
+
+        // Добавляем запрещенные пары (опционально)
+//        $scheduler->addForbiddenPair(1, 5)
+//            ->addForbiddenPair(3, 7);
+
+        $schedule = $scheduler->generateSchedule();
+        $stats = $scheduler->getScheduleStats($schedule);
+
+
+
+        return view('tournaments.schedule-form', [
+            compact('tournament'),
+            'layout' => $layout,
+            'mode' => 'edit',
+            'tournament' => $tournament,
+            'schedule' => $schedule,
+            'stats' => $stats,
+            'tables' => $tables,
+            'rounds' => $rounds,
             'styles' => ['tournaments.css']
         ]);
     }
@@ -419,14 +471,118 @@ class TournamentPagesController extends Controller
         $tournament->judges()->syncWithoutDetaching([
             $validatedData['user_id'] => ['type' => $validatedData['type']]
         ]);
-//        $tournament->judges()->updateOrCreate(
-//            ['user_id' => $validatedData['user_id']],
-//            ['type' => $validatedData['type']]
-//        );
 
         return redirect()->route('tournaments.show', $tournament)
             ->with('tab', 'judges')
             ->with('success', 'Роль успешно назначена');
+    }
+
+
+    public function deleteJudgeForm(Request $request, Tournament $tournament, User $judge)
+    {
+        $this->authorize('manage_tournament', $tournament);
+        $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
+
+        return view('tournaments.forms.delete-judge-form', [
+            'tournament' => $tournament,
+            'judge' => $judge,
+            'layout' => $layout,
+            'mode' => 'show',
+//            'styles' => ['tournaments.css']
+        ]);
+    }
+
+    public function judgeDelete(Request $request, Tournament $tournament, User $judge)
+    {
+        $this->authorize('manage_tournament', $tournament);
+
+
+        $tournament->judges()->detach([
+            $judge->id
+        ]);
+
+        return redirect()->route('tournaments.show', $tournament)
+            ->with('tab', 'judges')
+            ->with('success', 'Судья удален из турнира');
+    }
+
+    public function coupleStore(Request $request, Tournament $tournament)
+    {
+        $this->authorize('manage_tournament', $tournament);
+        $validatedData  = $request->validate([
+            'tournament_id' => 'required|exists:tournaments,id',
+            'couples' => 'required|array',
+            '_token' => 'required'
+        ]);
+
+        $tournamentId = $request->tournament_id;
+        $couplesPayload = $request->couples;
+
+        DB::transaction(function () use ($tournamentId, $couplesPayload) {
+            // Get all existing couple IDs for this tournament
+            $existingCoupleIds = TournamentCouple::where('tournament_id', $tournamentId)
+                ->pluck('id')
+                ->toArray();
+
+            $payloadCoupleIds = [];
+            $validCouples = [];
+
+            // Process each couple from payload
+            foreach ($couplesPayload as $coupleKey => $coupleData) {
+                // Validate couple data
+                if (!isset($coupleData['user1']) || !isset($coupleData['user2'])) {
+                    continue; // Skip invalid couples
+                }
+
+                $user1Id = $coupleData['user1'];
+                $user2Id = $coupleData['user2'];
+
+                // Check if users exist and are valid
+                if (!User::where('id', $user1Id)->exists() ||
+                    !User::where('id', $user2Id)->exists()) {
+                    continue; // Skip if users don't exist
+                }
+
+                // Check for duplicate users in the same couple
+                if ($user1Id == $user2Id) {
+                    continue; // Skip if same user
+                }
+
+                // Find existing couple or create new one
+                $couple = TournamentCouple::updateOrCreate(
+                    [
+                        'tournament_id' => $tournamentId,
+                        'user1_id' => $user1Id,
+                        'user2_id' => $user2Id
+                    ],
+                    [
+                        'tournament_id' => $tournamentId,
+                        'user1_id' => $user1Id,
+                        'user2_id' => $user2Id,
+                        // Add any other fields you need
+                    ]
+                );
+
+                $payloadCoupleIds[] = $couple->id;
+                $validCouples[] = $couple;
+            }
+
+            // Delete couples that are not in the payload
+            $couplesToDelete = array_diff($existingCoupleIds, $payloadCoupleIds);
+
+            if (!empty($couplesToDelete)) {
+                TournamentCouple::where('tournament_id', $tournamentId)
+                    ->whereIn('id', $couplesToDelete)
+                    ->delete();
+            }
+
+            return $validCouples;
+        });
+
+
+        return redirect()->route('tournaments.show', $tournament)
+            ->with('tab', 'participants')
+            ->with('success', 'Запрет на пары успешно установлен');
     }
 
 

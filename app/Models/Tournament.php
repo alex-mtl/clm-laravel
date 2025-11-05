@@ -77,6 +77,33 @@ class Tournament extends Model
         return $this->belongsToMany(User::class, 'tournament_participants');
     }
 
+    // В Tournament.php
+    public function forbiddenCouples()
+    {
+        return $this->hasMany(TournamentCouple::class);
+    }
+
+// Метод для проверки запрещенной пары
+    public function isForbiddenCouple($user1Id, $user2Id)
+    {
+        return $this->forbiddenCouples()
+            ->where(function ($query) use ($user1Id, $user2Id) {
+                $query->where('user1_id', $user1Id)->where('user2_id', $user2Id)
+                    ->orWhere('user1_id', $user2Id)->where('user2_id', $user1Id);
+            })
+            ->exists();
+    }
+
+// Метод для добавления запрещенной пары
+    public function addForbiddenCouple($user1Id, $user2Id, $reason = null)
+    {
+        return $this->forbiddenCouples()->create([
+            'user1_id' => min($user1Id, $user2Id), // Всегда храним меньший ID первым
+            'user2_id' => max($user1Id, $user2Id),
+            'reason' => $reason
+        ]);
+    }
+
     public function judges()
     {
         return $this->belongsToMany(User::class, 'tournament_judges')

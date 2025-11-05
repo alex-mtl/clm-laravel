@@ -4,6 +4,14 @@
             <h1>Игры</h1>
 
         </div>
+        @can('super_admin', auth()->user()->roles()->first())
+            <x-ajax-modal
+                endpoint="{{ route('tournaments.games.schedule', $tournament) }}"
+                title="Сгенерировать рассадку"
+                icon="grid_on"
+                {{--                class="inline-btn"--}}
+            />
+        @endcan
         @can('manage_tournament', $tournament)
             <x-ajax-modal
                 endpoint="{{ route('tournaments.games.wizard', $tournament) }}"
@@ -35,13 +43,16 @@
                                     <div > {{ $game->name }} </div>
 
                                     <div class="flex-row gap-1 space-between">
-                                        @can('manage_tournament', $tournament)
+{{--                                        @can('manage_tournament', $tournament)--}}
+                                        @can('host_game', $tournament)
                                             @include('widgets.inline-btn', [
                                                 'title' => 'Провести игру',
                                                 'icon' => 'play_circle',
                                                 'class' => 'inline-btn',
                                                 'endpoint' => 'window.location.href=\''.sprintf('/games/%s/host', $game->id).'\';'
                                             ])
+                                        @endcan
+                                        @can('manage_tournament', $tournament)
                                             @include('widgets.btn', [ 'btn' => (object)[
                                                 'name' => 'Удалить игру',
                                                 'icon' => 'cancel',

@@ -12,15 +12,7 @@
 .slot-row[data-status="alive"] .slot-number {
     color: var(--clm-text-green-light);
 }
-.clear-button {
-    position: absolute;
-    right: 1rem;
-    transition: transform 0.2s;
-}
 
-.pretty-input {
-    position: relative;
-}
 
 
 .role-icon {
@@ -117,6 +109,9 @@
     font-size: 1rem;
     font-weight: bold;
     color: var(--clm-red);
+    width: 1rem;
+    background-color: white;
+    text-align: center;
 }
 
 .slot-row[data-warns="1"] .player-warns::before {

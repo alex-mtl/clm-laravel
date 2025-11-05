@@ -39,17 +39,37 @@
             @endphp
                 @foreach($nominees as $accuser => $nominee)
 
-                    <x-synchronized-input
+{{--                    <x-synchronized-input--}}
+{{--                        name="candidate[{{$nominee}}][{{$idx}}]"--}}
+{{--                        label="Против {{ $nominee }}"--}}
+{{--                        value="{{ old('candidate.'.$nominee.'', 0) }}"--}}
+{{--                        placeholder="0"--}}
+{{--                        step="1"--}}
+{{--                        max="10"--}}
+{{--                        min="0"--}}
+{{--                        onchange="updateNominee('candidate[{{$nominee}}]')"--}}
+{{--                        type="number"--}}
+{{--                        idx="{{$idx}}"--}}
+{{--                    />--}}
+
+                    <x-slot-selector
                         name="candidate[{{$nominee}}][{{$idx}}]"
                         label="Против {{ $nominee }}"
-                        value="{{ old('candidate.'.$nominee.'', 0) }}"
-                        placeholder="0"
-                        step="1"
-                        max="10"
-                        min="0"
-                        onchange="updateNominee('candidate[{{$nominee}}]')"
-                        type="number"
-                        idx="{{$idx}}"
+                        selected-slot="{{ old('candidate.'.$nominee.'', 0) }}"
+                        callback="updateNominee"
+                        :slot-availability="[
+                                0 => true,
+                                1 => true,
+                                2 => true,
+                                3 => true,
+                                4 => (4 <= $alive),
+                                5 => (5 <= $alive),
+                                6 => (6 <= $alive),
+                                7 => (7 <= $alive),
+                                8 => (8 <= $alive),
+                                9 => (9 <= $alive),
+                                10 => (10 <= $alive)
+                            ]"
                     />
                     @php
                         $idx++;
