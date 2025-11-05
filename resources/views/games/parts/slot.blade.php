@@ -24,8 +24,9 @@
     @else
 
         <div class="player-avatar">
-            <span class="player-warns"></span>
-            <a href="/users/{{ $slot['user_id'] }}" >
+            <span class="player-warns" onclick="removeWarning({{ $game->id }}, {{ $i }})">
+            </span>
+            <a href="/players/{{ $slot['user_id'] }}" >
                 <img src="{{ $slot['avatar'] }}">
             </a>
         </div>

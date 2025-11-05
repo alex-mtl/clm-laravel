@@ -120,10 +120,20 @@ class User extends Authenticatable
         return $this->belongsToMany(Tournament::class, 'tournament_participants')
             ->withTimestamps();
     }
+    public function judgeTournaments()
+    {
+        return $this->belongsToMany(Tournament::class, 'tournament_judges')
+            ->withTimestamps();
+    }
     public function games()
     {
         return $this->belongsToMany(Game::class, 'game_participants')
             ->withTimestamps();
+    }
+
+    public function judgeGames()
+    {
+        return $this->hasMany(Game::class, 'judge_id');
     }
 
     public function hasRole($roleSlug, $clubId = null)
@@ -223,6 +233,15 @@ class User extends Authenticatable
     {
         return once(function () use ($clubId) {
             return $this->hasRole('tournament_organizer', $clubId) || $this->isClubAdmin($clubId);
+        });
+    }
+    public function isTournamentJudge($tournament)
+    {
+        return once(function () use ($tournament) {
+
+            $isJudge = $tournament->judges()->where('user_id', $this->id)->exists();
+
+            return $isJudge || $this->isClubAdmin($tournament->club->id);
         });
     }
     static public function saveAvatar($request, $user = null)

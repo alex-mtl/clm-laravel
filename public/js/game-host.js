@@ -325,13 +325,28 @@ window.removeSlotResponse = function (data) {
         slot.setAttribute('data-status', data.status);
 
         btnAdd = document.querySelector(`#slot-${data.slot}-eliminate-btn`);
-        btnAdd.classList.add('hidden');
+        if(data.status === 'alive') {
+            btnAdd.classList.remove('hidden');
+        } else {
+            btnAdd.classList.add('hidden');
+        }
+
 
         btnRemove = document.querySelector(`#slot-${data.slot}-restore-btn`);
-        btnRemove.classList.remove('hidden');
+        if(data.status === 'alive') {
+            btnRemove.classList.add('hidden');
+        } else {
+            btnRemove.classList.remove('hidden');
+        }
+
 
         btnWarn = document.querySelector(`#slot-${data.slot}-warn-btn`);
-        btnWarn.classList.add('hidden');
+        if(data.status === 'alive') {
+            btnWarn.classList.remove('hidden');
+        } else {
+            btnWarn.classList.add('hidden');
+        }
+
 
     }
 
@@ -751,6 +766,11 @@ window.openStreamLink = function() {
 }
 
 
+window.candidateVotes = function(name, votes) {
+    console.log(name, votes);
+}
+
+
 
 // window.openStreamLink = function() {
 //     const streamKey = document.querySelector("input[name='stream_key']").value;
@@ -823,6 +843,48 @@ window.addWarning = async function(gameId, slotId) {
             if(data.warns === 4) {
                 removeSlotResponse({
                     status: 'eliminated',
+                    slot: data.slot
+                });
+                // console.log(data);
+            }
+
+        }
+        // return data.game; // Return the updated props from server
+
+    } catch (error) {
+        console.error('Update failed:', error);
+        // Fallback to local state if update fails
+        return game;
+    }
+}
+
+window.removeWarning = async function(gameId, slotId) {
+    try {
+
+        const response = await fetch(`/games/${gameId}/warn/${slotId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                'slot': slotId,
+                'remove': true
+            })
+        });
+
+        if (!response.ok) throw new Error('Network response was not ok');
+
+        const data = await response.json();
+        if(data.status === 'error') {
+            alert(data.message);
+            return;
+        } else if (data.status === 'ok') {
+            slot = document.querySelector(`.slot-row[data-slot="${data.slot}"]`);
+            slot.setAttribute('data-warns', data.warns);
+            if(data.warns < 4) {
+                removeSlotResponse({
+                    status: 'alive',
                     slot: data.slot
                 });
                 // console.log(data);
@@ -962,30 +1024,137 @@ window.bestGuessHandler = function(data) {
     console.log(data);
 }
 
+//
+// window.updateNominee = async function(elem, votes) {
+//     // const votes = document.querySelector('#voting-form input[name="elem"]').value;
+//     const alive = document.querySelector('#voting-form input[name="alive"]').value;
+//     const maxIdx = document.querySelector('#voting-form input[name="max_idx"]').value;
+//
+//     candidates = document.querySelectorAll('#voting-form input[name^="candidate["]');
+//     let total = 0;
+//     for (const input of candidates) {
+//         if (input.name.endsWith(`][${maxIdx}]`)) {
+//             console.log(input.name);
+//         } else {
+//             total += (parseFloat(input.value) || 0);
+//         }
+//
+//
+//
+//     };
+//
+//     lastCandidate = document.querySelector('#voting-form input[name$="][' + maxIdx + ']"]')
+//     visibleCandidate = document.querySelector('#voting-form input[id$="][' + maxIdx + ']"]')
+//     console.log(lastCandidate)
+//     lastCandidate.value = alive - total;
+//     visibleCandidate.value = alive - total;
+// }
 
-window.updateNominee = async function(elem) {
-    // const votes = document.querySelector('#voting-form input[name="elem"]').value;
+window.updateNominee = async function(name, value) {
+    function getLastIndex(inputName) {
+        const match = inputName.match(/\[(\d+)\]$/);
+        return match ? parseInt(match[1]) : 0;
+    }
+
+    function findMaxCandidates() {
+        const candidates = document.querySelectorAll('#voting-form input[name^="candidate["]');
+
+        let maxValue = -Infinity;
+        let maxCandidates = [];
+
+        for (const input of candidates) {
+            const value = parseFloat(input.value) || 0;
+            const match = input.name.match(/candidate\[(\d+)\]/);
+            const candidateId = match ? parseInt(match[1]) : null;
+
+            if (candidateId === null) continue;
+
+            if (value > maxValue) {
+                maxValue = value;
+                maxCandidates = [candidateId];
+            } else if (value === maxValue) {
+                maxCandidates.push(candidateId);
+            }
+        }
+
+        if (maxCandidates.length === 1) {
+            return maxCandidates[0];
+        } else if (maxCandidates.length > 1) {
+            return maxCandidates.join(', ')
+        }
+        // return maxCandidates; // Always returns array
+    }
+
     const alive = document.querySelector('#voting-form input[name="alive"]').value;
     const maxIdx = document.querySelector('#voting-form input[name="max_idx"]').value;
 
-    candidates = document.querySelectorAll('#voting-form input[name^="candidate["]');
+    // Get all candidate inputs
+    const candidates = document.querySelectorAll('#voting-form input[name^="candidate["]');
+
     let total = 0;
+    let currentIdx = null;
+
+    // Calculate total and find current index
     for (const input of candidates) {
-        if (input.name.endsWith(`][${maxIdx}]`)) {
-            console.log(input.name);
-        } else {
-            total += (parseFloat(input.value) || 0);
+        // Extract index from name like "candidate[123][1]"
+        const match = input.name.match(/\[(\d+)\]$/);
+        if (match) {
+            const idx = parseInt(match[1]);
+
+            if (idx < maxIdx) {
+                if(input.name === name) {
+                    total += value;
+                    input.value = value;
+                } else {
+                    total += (parseFloat(input.value) || 0);
+                }
+                // Sum all votes except the last nominee
+
+            }
+
+            // Find which index we're currently updating
+            if (input.name === name) {
+                currentIdx = idx;
+            }
+            if(getLastIndex(input.name) > getLastIndex(name)) {
+                slotSelector = input.parentNode.querySelector('.slot-selector-panel');
+                const allOptions = slotSelector.querySelectorAll('.slot-option[data-slot]');
+
+                allOptions.forEach(option => {
+                    const slotValue = parseInt(option.getAttribute('data-slot'));
+                    if (slotValue > (alive - total)) {
+                        option.classList.remove('available');
+                        option.classList.add('unavailable');
+                    } else {
+                        option.classList.remove('unavailable');
+                        option.classList.add('available');
+                    }
+                });
+            }
         }
+    }
 
+    if (currentIdx < maxIdx) {
+        const lastCandidate = document.querySelector(`#voting-form input[name$="][${maxIdx}]"]`);
+        const slotSelector = lastCandidate.parentNode.querySelector('.slot-selector-panel');
 
+        if (lastCandidate) {
+            const lastValue = Math.max(0, alive - total);
+            lastCandidate.value = lastValue;
+            slotSelector.querySelectorAll('.slot-option').forEach(option => option.classList.remove('active'));
+            setActive = slotSelector.querySelector('.slot-option[data-slot="'+lastValue+'"]');
+            setActive.classList.add('active');
+        }
+    }
 
-    };
+    voted = findMaxCandidates();
+    votedList = document.querySelector('#voting-form input[name="voted_list"]')
+    visibleVotedList = document.querySelector('#voting-form input[id="visible-voted_list"]')
 
-    lastCandidate = document.querySelector('#voting-form input[name$="][' + maxIdx + ']"]')
-    visibleCandidate = document.querySelector('#voting-form input[id$="][' + maxIdx + ']"]')
-    console.log(lastCandidate)
-    lastCandidate.value = alive - total;
-    visibleCandidate.value = alive - total;
+    votedList.value = voted;
+    visibleVotedList.value = voted;
+
+    console.log(`Updated: ${name} = ${value}, total = ${total}, out of ${alive}, last nominee gets: ${alive - total}`);
 }
 
 window.startGameActions = function() {

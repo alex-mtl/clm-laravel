@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -35,7 +36,8 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect('/dashboard');
+//            return redirect('/dashboard');
+            return redirect()->route('user.profile');
         }
 
         return back()->withErrors(['email' => 'Invalid credentials'])->withInput();
@@ -44,6 +46,12 @@ class AuthController extends Controller
     public function showRegister()
     {
         return view('auth.register', [
+            'styles' => ['login.css']
+        ]);
+    }
+    public function messageSent()
+    {
+        return view('auth.message-sent', [
             'styles' => ['login.css']
         ]);
     }
@@ -86,16 +94,19 @@ class AuthController extends Controller
                 ->subject('🔐 Сброс пароля для вашего аккаунта');
         });
 
-        return back()->with('success', 'Ссылка для сброса пароля отправлена на вашу почту.');
+//        return back()->with('success', 'Ссылка для сброса пароля отправлена на вашу почту.');
+        return redirect()->route('password.message-sent');
     }
 
-    public function showResetPasswordForm($token)
+    public function resetPasswordForm(Request $request, $token)
     {
-        return view('auth.reset-password', ['token' => $token]);
+        $email = $request->email;
+        return view('auth.reset-password', ['email' => $email, 'token' => $token]);
     }
 
     public function resetPassword(Request $request)
     {
+
         $request->validate([
             'email' => 'required|email|exists:users',
             'password' => 'required|min:6|confirmed',

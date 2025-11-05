@@ -1327,7 +1327,7 @@ div#login-form {
     margin-top: 4px;
     max-height: 200px;
     overflow-y: auto;
-    z-index: 10;
+    z-index: 100;
     padding: 0.3rem;
 }
 
@@ -1560,4 +1560,124 @@ div#login-form {
     to {
         width: 0%;
     }
+}
+.clear-button {
+    position: absolute;
+    right: 1rem;
+    transition: transform 0.2s;
+}
+
+.pretty-input {
+    position: relative;
+}
+
+
+.slot-selector-display {
+    width: 50px;
+    height: 50px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.slot-selector-display:hover {
+    border-color: #666;
+}
+
+.slot-selector-display.selected {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+    color: #3b82f6;
+}
+
+.slot-selector-display.has-options:hover {
+    border-color: #3b82f6;
+}
+
+.slot-selector-panel {
+    /*position: absolute;*/
+    background: var(--clm-text-dark);
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 3px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    /*z-index: 1000;*/
+    display: flex;
+    gap: 2px;
+    margin-top: 5px;
+}
+
+.slot-option {
+    width: 1.3rem;
+    height: 1.3rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.slot-option.available {
+    cursor: pointer;
+    border-color: #e5e7eb;
+}
+
+.slot-option.available:hover {
+    border-color: #9ca3af;
+    background-color: #f9fafb;
+    color: var(--clm-red);
+}
+
+.slot-option.active {
+    border-color: var(--clm-red);
+    background-color: var(--clm-red);
+    color: white;
+    /*width: 1.5rem;*/
+    /*height: 1.5rem;*/
+    transform: scale(1.2);
+}
+
+.slot-option.active.don,
+.slot-option.active.mafia
+{
+    border-color: var(--clm-black);
+    background-color: var(--clm-black);
+}
+
+.slot-option.active.sheriff
+{
+    background-color: darkgreen;
+    border-color: darkgreen;
+    color: gold;
+}
+
+.slot-option.unavailable {
+    cursor: not-allowed;
+    background-color: #f3f4f6;
+    color: #9ca3af;
+    border-color: #d1d5db;
+    opacity: 0.6;
+}
+
+.clear-option {
+    border-color: #ef4444 !important;
+    color: #ef4444;
+}
+
+.clear-option:hover {
+    background-color: #fef2f2 !important;
+    border-color: #dc2626 !important;
+}
+
+.clear-option.active {
+    background-color: #ef4444 !important;
+    color: white !important;
 }

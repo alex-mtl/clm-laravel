@@ -1,11 +1,11 @@
-<script>
-    window.csrfToken = '{{ csrf_token() }}';
-    const PHASES_ORDER = @json(App\Models\Game::PHASES_ORDER);
-    let toasts = @json($toasts ?? []);
-</script>
 @extends('layouts.app')
 
 @section('content')
+    <script>
+        window.csrfToken = '{{ csrf_token() }}';
+        const PHASES_ORDER = @json(App\Models\Game::PHASES_ORDER);
+        let toasts = @json($toasts ?? []);
+    </script>
     @csrf
     <input type="hidden" name="phase_code" value="{{ $game->props['phase-code'] }}">
     <input type="hidden" name="phase" value="{{ $game->props['phase'] }}">

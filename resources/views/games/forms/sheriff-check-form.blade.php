@@ -16,15 +16,37 @@
             <div>Шериф проверяет</div>
             <div>Кто мафия?</div>
 
-            <x-synchronized-input
+{{--            <x-synchronized-input--}}
+{{--                name="sheriffCheck"--}}
+{{--                label="Проверить"--}}
+{{--                value="{{ old('sheriffCheck', $sheriffCheck) }}"--}}
+{{--                placeholder="0"--}}
+{{--                step="1"--}}
+{{--                max="10"--}}
+{{--                min="0"--}}
+{{--                type="number"--}}
+{{--            />--}}
+
+@php
+//dd($roles);
+@endphp
+            <x-slot-selector
                 name="sheriffCheck"
-                label="Проверить"
-                value="{{ old('sheriffCheck', $sheriffCheck) }}"
-                placeholder="0"
-                step="1"
-                max="10"
-                min="0"
-                type="number"
+                selected-slot="{{ old('sheriffCheck', $sheriffCheck) }}"
+                :slot-roles="$roles"
+                :slot-availability="[
+                                0 => true,
+                                1 => true,
+                                2 => true,
+                                3 => true,
+                                4 => true,
+                                5 => true,
+                                6 => true,
+                                7 => true,
+                                8 => true,
+                                9 => true,
+                                10 => true
+                            ]"
             />
 
         <div class="flex-row ">

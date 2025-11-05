@@ -29,6 +29,10 @@ class AuthServiceProvider extends ServiceProvider
             return $user->isTournamentOrganizer($tournament->club->id);
         });
 
+        Gate::define('host_game', function (User $user, Tournament $tournament) {
+            return $user->isTournamentJudge($tournament);
+        });
+
 //        Gate::define('manage_club', function (User $user, Club $club) {
 //            dd('test manage_club');
 //            return $user->isClubAdmin($club->id);

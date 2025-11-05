@@ -20,15 +20,35 @@
                 />
                 @foreach($mafTeam as $mafia => $target)
 
-                    <x-synchronized-input
+{{--                    <x-synchronized-input--}}
+{{--                        name="mafia[{{$mafia}}]"--}}
+{{--                        label="Игрок {{ $mafia }}"--}}
+{{--                        value="{{ old('mafia.'.$mafia.'', $target) }}"--}}
+{{--                        placeholder="0"--}}
+{{--                        step="1"--}}
+{{--                        max="10"--}}
+{{--                        min="0"--}}
+{{--                        type="number"--}}
+{{--                    />--}}
+
+                    <x-slot-selector
                         name="mafia[{{$mafia}}]"
                         label="Игрок {{ $mafia }}"
-                        value="{{ old('mafia.'.$mafia.'', $target) }}"
-                        placeholder="0"
-                        step="1"
-                        max="10"
-                        min="0"
-                        type="number"
+                        selected-slot="{{ old('mafia.'.$mafia.'', $target) }}"
+{{--                        :slot-roles="$roles"--}}
+                        :slot-availability="[
+                                0 => true,
+                                1 => true,
+                                2 => true,
+                                3 => true,
+                                4 => true,
+                                5 => true,
+                                6 => true,
+                                7 => true,
+                                8 => true,
+                                9 => true,
+                                10 => true
+                            ]"
                     />
 
                 @endforeach
