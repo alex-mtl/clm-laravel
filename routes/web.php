@@ -51,7 +51,6 @@ Route::get('/verify-email/{token}', function ($token) {
 
 // Страница запроса сброса пароля
 Route::get('/forgot-password', [AuthController::class, 'forgotPasswordForm'])->name('password.request');
-Route::get('/message-sent', [AuthController::class, 'messageSent'])->name('password.message-sent');
 Route::post('/forgot-password', [AuthController::class, 'sendPasswordResetEmail'])->name('password.email');
 
 // Страница сброса пароля
@@ -236,25 +235,12 @@ Route::get('/tournaments/{tournament}/judges/create', [TournamentPagesController
     ->name('tournaments.judges.create');
 Route::post('/tournaments/{tournament}/judges', [TournamentPagesController::class, 'judgeStore'])
     ->name('tournaments.judges.store');
-Route::get('/tournaments/{tournament}/judges/{judge}/delete', [TournamentPagesController::class, 'deleteJudgeForm'])
-    ->name('tournaments.judges.deleteForm');
-Route::post('/tournaments/{tournament}/judges/{judge}', [TournamentPagesController::class, 'judgeDelete'])
-    ->name('tournaments.judges.delete');
-
-Route::get('/tournaments/{tournament}/couples/create', [TournamentPagesController::class, 'coupleCreate'])
-    ->name('tournaments.couples.create');
-Route::post('/tournaments/{tournament}/couples', [TournamentPagesController::class, 'coupleStore'])
-    ->name('tournaments.couples.store');
 
 Route::get('/tournaments/{tournament}/games/wizard', [TournamentPagesController::class, 'wizardForm'])
     ->name('tournaments.games.wizard');
 
 Route::put('/tournaments/{tournament}/games/wizard', [TournamentPagesController::class, 'eventsUpdate'])
     ->name('tournaments.events.update');
-
-
-Route::get('/tournaments/{tournament}/games/schedule', [TournamentPagesController::class, 'scheduleForm'])
-    ->name('tournaments.games.schedule');
 
 
 
@@ -368,11 +354,6 @@ Route::post('/games/{game}/delete', [GamePagesController::class, 'delete'])
 //
 //    return 'Email sent!';
 //});
-
-Route::get('/test-laravel', function () {
-die('No response');
-    return 'laravel response ';
-});
 
 Route::get('/manage/clubs', [ClubPagesController::class, 'index'])
     ->middleware('auth')
