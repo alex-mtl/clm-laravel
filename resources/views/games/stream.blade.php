@@ -31,7 +31,7 @@
     <div class="main-area">
     </div>
 
-    <div class="player-row">
+    <div class="player-row w100 ml-auto mr-auto">
         <!-- 10 players -->
         @foreach($slots as $i => $slot)
             <div class="player-card" data-slot="{{ $i }}" data-role="{{ $slot['role'] }}">

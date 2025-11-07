@@ -8,6 +8,7 @@
         class="inline-btn {{  $game->props['phase-code'] === 'BEST-GUESS' ? 'active' : '' }}"
         callback="bestGuessHandler"
         icon="question_mark"
+        container="game-action-form-container"
     />
     <x-ajax-modal
         btnid="voting-btn"
@@ -17,6 +18,7 @@
         class="inline-btn {{ $game->props['phase-code'] === 'VOTING' ? 'active' : '' }}"
         callback="votingHandler"
         icon="thumbs_up_down"
+        container="game-action-form-container"
     />
     <x-ajax-modal
         btnid="shooting-btn"
@@ -26,6 +28,7 @@
         class="inline-btn {{  in_array($game->props['phase-code'], ['SHOOTING', 'LAST-SPEECH-VOTED'])  ? 'active' : '' }}"
         callback="shootingHandler"
         icon="my_location"
+        container="game-action-form-container"
     />
 
     <x-ajax-modal
@@ -36,6 +39,7 @@
         class="inline-btn {{  $game->props['phase-code'] === 'DON-CHECK' ? 'active' : '' }}"
         callback="donCheckHandler"
         icon="domino_mask"
+        container="game-action-form-container"
     />
 
     <x-ajax-modal
@@ -46,6 +50,7 @@
         class="inline-btn {{ $game->props['phase-code'] === 'SHERIFF-CHECK' ? 'active' : '' }}"
         callback="sheriffCheckHandler"
         icon="local_police"
+        container="game-action-form-container"
     />
 
     <x-ajax-modal
@@ -56,5 +61,6 @@
         class="inline-btn {{ in_array($game->props['phase-code'], ['PROTOCOL-COLOR','LAST-SPEECH-KILLED']) ? 'active' : '' }}"
         callback="protocolColorHandler"
         icon="invert_colors"
+        container="game-action-form-container"
     />
 </div>

@@ -90,7 +90,7 @@ class GamePagesController extends Controller
                 'status' => $slot->status ?? 'alive',
                 'warns' => $slot->warns ?? 0,
                 'avatar' => $avatar,
-                'candidate' => $nominees[$slot->slot] ?? 0,
+                'candidate' => Game::getCandidateBySlot($nominees, $slot->slot),
                 'score_base'  => $slot->score_base ?? 0,
                 'score_1'     => $slot->score_1 ?? 0,
                 'score_2'     => $slot->score_2 ?? 0,
@@ -319,7 +319,7 @@ class GamePagesController extends Controller
             'showRoles' => $game->props['stream']['show-roles'] ?? 'off',
             'settings' => $game->props['stream'],
             'slots' => $slots,
-            'nominations' => array_values($nominees),
+            'nominations' => Game::nominations($nominees),
             'killedList' => $killedList,
             'bestGuess' => $bg,
             'protocolColor' => $pc,
@@ -1044,9 +1044,12 @@ class GamePagesController extends Controller
 
         $nominees = $game->props['days']['D'.$day]['nominees'] ?? [];
         if((int)$candidate === 0) {
-            unset($nominees[$slot]);
+            $nominees = array_filter($nominees, function($nominee) use ($slot) {
+                return $nominee['slot'] !== $slot;
+            });
+
         } else {
-            $nominees[$slot] = $candidate;
+            $nominees[] = ['slot' => $slot, 'candidate' => $candidate ];
         }
 
         $props = $game->props;
@@ -1202,6 +1205,47 @@ class GamePagesController extends Controller
         ]);
 
         return $status;
+    }
+
+    public function updateNominees(Request $request, Game $game)
+    {
+        $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
+        $games = Game::where('id', $game->id)->get();
+//        $games = Game::whereNot('id', $game->id)->get();
+        $updates = 0;
+
+        foreach ($games as $game) {
+            $props = $game->props;
+            $update = false;
+            if(isset($props['days'])) {
+                foreach ($props['days'] as $day => $dayData) {
+                    if (isset($dayData['nominees'])) {
+                        $nominees = $dayData['nominees'];
+                        if (!empty($nominees)) {
+                            $update = true;
+                            $new = [];
+                            foreach ($nominees as $slot => $candidate) {
+                                $new[] = ['slot' => $slot, 'candidate' => $candidate];
+                            }
+                        } else {
+                            $new = $nominees;
+                        }
+                        $props['days'][$day]['nominees'] = $new;
+                    }
+                }
+                if ($update) {
+                    $updates++;
+                    $game->update([
+                        'props' => $props
+                    ]);
+                }
+            }
+        }
+
+        return response()->json([
+            'status' => 'ok',
+            'updates' => $updates
+        ]);
     }
 
     public function restoreForm(Request $request, Game $game, int $slot)

@@ -9,21 +9,53 @@
         formHtml: '',
         popup: null,
         callback: {{ $callback ?? 'null'}},
+        container: '{{ $container ?? '' }}',
 
         // Initialize popup once
-        initPopup() {
-            const template = document.getElementById('popup-template');
-            this.popup = template.content.cloneNode(true).querySelector('.popup');
-            document.body.appendChild(this.popup);
+{{--        initPopup() {--}}
+{{--            const template = document.getElementById('popup-template');--}}
+{{--            this.popup = template.content.cloneNode(true).querySelector('.popup');--}}
+{{--            document.body.appendChild(this.popup);--}}
 
-            // Close handlers
-            this.popup.querySelector('.popup-close').addEventListener('click', () => {
-                this.open = false;
-            });
+{{--            // Close handlers--}}
+{{--            this.popup.querySelector('.popup-close').addEventListener('click', () => {--}}
+{{--                this.open = false;--}}
+{{--            });--}}
 
-            this.popup.querySelector('.popup-backdrop').addEventListener('click', () => {
-                this.open = false;
-            });
+{{--            this.popup.querySelector('.popup-backdrop').addEventListener('click', () => {--}}
+{{--                this.open = false;--}}
+{{--            });--}}
+
+{{--            this.popup.addEventListener('submit', (e) => {--}}
+{{--                if (e.target.tagName === 'FORM') {--}}
+{{--                    this.handleSubmit(e);--}}
+{{--                }--}}
+{{--            });--}}
+{{--        },--}}
+        initComponent() {
+            if (this.container) {
+                // Container mode - find the target container
+                this.popup = document.getElementById(this.container);
+                if (!this.popup) {
+                    console.error('Container not found:', this.container);
+                    return;
+                }
+
+            } else {
+                // Modal mode - initialize popup
+                const template = document.getElementById('popup-template');
+                this.popup = template.content.cloneNode(true).querySelector('.popup');
+                document.body.appendChild(this.popup);
+
+                // Close handlers for modal only
+                this.popup.querySelector('.popup-close').addEventListener('click', () => {
+                    this.open = false;
+                });
+
+                this.popup.querySelector('.popup-backdrop').addEventListener('click', () => {
+                    this.open = false;
+                });
+            }
 
             this.popup.addEventListener('submit', (e) => {
                 if (e.target.tagName === 'FORM') {
@@ -33,12 +65,42 @@
         },
 
         // Toggle popup visibility when open state changes
+{{--        togglePopup() {--}}
+{{--            if (this.open) {--}}
+{{--                this.popup.classList.add('active');--}}
+{{--                this.popup.querySelector('.popup-body').innerHTML = this.formHtml;--}}
+{{--            } else {--}}
+{{--                this.popup.classList.remove('active');--}}
+{{--            }--}}
+{{--        },--}}
+
         togglePopup() {
             if (this.open) {
-                this.popup.classList.add('active');
-                this.popup.querySelector('.popup-body').innerHTML = this.formHtml;
+                if (this.container) {
+                    // Container mode - insert form
+                    this.popup.innerHTML = this.formHtml;
+                    closeBtn = this.popup.parentElement.querySelector('.form-close')
+                    console.log(closeBtn)
+                    closeBtn.classList.remove('hidden')
+                    console.log(closeBtn)
+                    closeBtn.addEventListener('click', () => {
+                        this.open = false;
+                    });
+                } else {
+                    // Modal mode - show popup
+                    this.popup.classList.add('active');
+                    this.popup.querySelector('.popup-body').innerHTML = this.formHtml;
+                }
             } else {
-                this.popup.classList.remove('active');
+                if (this.container) {
+                    // Container mode - clear container
+                    this.popup.innerHTML = '';
+                    closeBtn = this.popup.parentElement.querySelector('.form-close')
+                    closeBtn.classList.add('hidden')
+                } else {
+                    // Modal mode - hide popup
+                    this.popup.classList.remove('active');
+                }
             }
         },
 
@@ -116,7 +178,7 @@
     }"
     x-init="
         this.callback = '{{ $callback }}' || null;
-        initPopup();
+        initComponent();
 
         window.addEventListener('open-ajax-modal', (e) => {
             if (e.detail.endpoint === $refs.endpoint.value) {

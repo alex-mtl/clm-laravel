@@ -1,12 +1,12 @@
 @extends($layout ?: 'layouts.app')
 
 @section('content')
-    <div class="content-main">
+    <div class="form-wrapper">
 
         <form class="flex-column w-20 gap-1" x-data="" x-ref="votingForm" id="voting-form" action="{{ route('games.voting', [$game->id]) }}" method="POST">
             @csrf
             <button class="hidden" type="submit">Save</button>
-            <span>{{ $votingDay }}</span>
+{{--            <span>{{ $votingDay }}</span>--}}
             <x-custom-dropdown
                 name="votingDay"
                 :options="$dayOptions"
@@ -26,8 +26,8 @@
                 <input type="hidden" name="no_voting_reason" value="На голосование выставлена одна кандидатура.\nГолосование не проводится!">
             @elseif(count($nominees) === 1)
                 <div>На голосование выставлена одна кандидатура.</div>
-                <div>Игрок номер {{ reset($nominees) }} автоматически заголосован!</div>
-                <input type="hidden" name="voting_result" value="{{ reset($nominees) }}">
+                <div>Игрок номер {{ $nominees[0]['candidate'] }} автоматически заголосован!</div>
+                <input type="hidden" name="voting_result" value="{{ $nominees[0]['candidate'] }}">
 
             @else
                 <div>Должны проголосовать {{ $alive }} игроков</div>
@@ -37,7 +37,7 @@
             @php
                 $idx = 1;
             @endphp
-                @foreach($nominees as $accuser => $nominee)
+                @foreach($nominees as $nominee)
 
 {{--                    <x-synchronized-input--}}
 {{--                        name="candidate[{{$nominee}}][{{$idx}}]"--}}
@@ -53,9 +53,9 @@
 {{--                    />--}}
 
                     <x-slot-selector
-                        name="candidate[{{$nominee}}][{{$idx}}]"
-                        label="Против {{ $nominee }}"
-                        selected-slot="{{ old('candidate.'.$nominee.'', 0) }}"
+                        name="candidate[{{$nominee['candidate']}}][{{$idx}}]"
+                        label="Против {{ $nominee['candidate'] }}"
+                        selected-slot="{{ old('candidate.'.$nominee['candidate'].'', 0) }}"
                         callback="updateNominee"
                         :slot-availability="[
                                 0 => true,
@@ -85,7 +85,7 @@
             <x-synchronized-input
                 name="voted_list"
                 label="Заголосовать игроков"
-                value="{{ $votedList ? implode(', ', $votedList ?? []) : implode(', ', $nominees ?? []) }}"
+                value="{{ $votedList ? implode(', ', $votedList ?? []) : implode(', ', array_column($nominees ?? [], 'candidate')) }}"
 
             />
         <div class="flex-row ">
