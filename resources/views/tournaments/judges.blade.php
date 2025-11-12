@@ -42,10 +42,19 @@
                 </div>
                 <div class="user-details">
                     <div class="div23">{{ $judge->name }}</div>
-                    <div class="div24">Рейтинг: {{$judge->rating ?? 0}} • Игр: {{ $judge->games ?? 0 }}</div>
+                    <div class="div24">Рейтинг: {{$judge->rating ?? 0}} • Турниров: {{ $judge->judgeTournaments()->count() ?? 0 }}</div>
                 </div>
 
                 <div class="ml-auto">{{ \App\Models\TournamentJudges::types[$judge->pivot->type ?? 'judge'] }}</div>
+                @can('manage_tournament', $tournament)
+                    @include('widgets.btn', [ 'btn' => (object)[
+                        'name' => 'Удалить',
+                        'icon' => 'cancel',
+                        'class' => 'inline-btn',
+                        'endpoint' => route('tournaments.judges.deleteForm', ['%s','%s']),
+                        'endpoint_params' => [$tournament->id, $judge->id],
+                    ]])
+                @endcan
 
 
             </div>

@@ -56,10 +56,10 @@
             </form>
             @endif
             <div>
-{{--                <div class="form-footer">--}}
+                <div class="form-footer ml-auto">
 {{--                    <label><input type="checkbox"> Запомнить меня</label>--}}
-{{--                    <a href="#" class="forgot-link">Забыли пароль?</a>--}}
-{{--                </div>--}}
+                    <a href="/forgot-password" class="forgot-link ml-auto">Забыли пароль?</a>
+                </div>
                 <div class="divider"><span>или</span></div>
 
                 <button type="button" class="social-btn google" onclick="window.location.href = '{{ route('auth.google') }}';">

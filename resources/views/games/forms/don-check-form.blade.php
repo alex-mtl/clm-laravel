@@ -16,16 +16,35 @@
             <div>Дон проверяет</div>
             <div>Кто шериф?</div>
 
-            <x-synchronized-input
-                name="donCheck"
-                label="Проверить"
-                value="{{ old('donCheck', $donCheck) }}"
-                placeholder="0"
-                step="1"
-                max="10"
-                min="0"
-                type="number"
-            />
+{{--            <x-synchronized-input--}}
+{{--                name="donCheck"--}}
+{{--                label="Проверить"--}}
+{{--                value="{{ old('donCheck', $donCheck) }}"--}}
+{{--                placeholder="0"--}}
+{{--                step="1"--}}
+{{--                max="10"--}}
+{{--                min="0"--}}
+{{--                type="number"--}}
+{{--            />--}}
+
+                        <x-slot-selector
+                            name="donCheck"
+                            selected-slot="{{ old('donCheck', $donCheck) }}"
+                            :slot-roles="$roles"
+                            :slot-availability="[
+                                0 => true,
+                                1 => true,
+                                2 => true,
+                                3 => true,
+                                4 => true,
+                                5 => true,
+                                6 => true,
+                                7 => true,
+                                8 => true,
+                                9 => true,
+                                10 => true
+                            ]"
+                        />
 
         <div class="flex-row ">
             <div class="flex items-center justify-between gap-2 w100">
