@@ -199,3 +199,14 @@
     width: 7rem;
     height: 7rem;
 }
+.tournaments-div{
+    width: 100%;
+}
+.club-menu {
+    float: left;
+}
+.club-menu a{
+    display: inline-block;
+    color: #929191;
+    padding: 10px;
+}

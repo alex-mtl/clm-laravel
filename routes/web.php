@@ -214,6 +214,9 @@ Route::prefix('events/{event}')->group(function () {
 Route::get('/tournaments', [TournamentPagesController::class, 'index'])
     ->name('tournaments.index');
 
+Route::get('/tournaments/past', [TournamentPagesController::class, 'past'])
+    ->name('tournaments.past');
+
 Route::get('/tournaments/{tournament}', [TournamentPagesController::class, 'show'])
     ->name('tournaments.show');
 Route::get('/tournaments/{tournament}/requests/create', [TournamentPagesController::class, 'applicationForm'])

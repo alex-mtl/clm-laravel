@@ -117,10 +117,11 @@
         <div class="flex-row ">
             <div class="flex items-center justify-between gap-2">
                 @if($mode === 'create' || $mode === 'edit')
-                    <span class="btn"
-                          x-data
-                          @click="document.getElementById('tournament-form').submit()">Сохранить</span>
-
+                    @can('manage_tournament', $tournament)
+                        <span class="btn"
+                              x-data
+                              @click="document.getElementById('tournament-form').submit()">Сохранить</span>
+                    @endcan
                 @endif
 
                 @if($mode !== 'create')

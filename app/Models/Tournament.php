@@ -12,14 +12,8 @@ class Tournament extends Model
     const PHASES = [
         'draft' => 'Черновик',
         'registration' => 'Регистрация',
-        'qualifying' => 'Квалификация',
-        'finals' => 'Финалы',
-        'closed' => 'Закрыт',
-        'cancelled' => 'Отменен',
-        'finished' => 'Завершен',
         'in_progress' => 'В процессе',
-        'draft' => 'Черновик',
-
+        'finished' => 'Завершен',
     ];
 
     protected $fillable = [

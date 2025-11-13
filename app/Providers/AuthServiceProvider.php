@@ -26,6 +26,12 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
         Gate::define('manage_tournament', function (User $user, Tournament $tournament) {
+            // Для завершённых турниров только admin и super_admin
+            if ($tournament->phase === 'finished') {
+                return $user->isAdmin(); // isAdmin() проверяет admin ИЛИ super_admin
+            }
+
+            // Для остальных фаз - обычная проверка
             return $user->isTournamentOrganizer($tournament->club->id);
         });
 

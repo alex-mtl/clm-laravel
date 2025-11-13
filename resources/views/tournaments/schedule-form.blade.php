@@ -2,6 +2,7 @@
 
 @section('content')
     <div class="content-main">
+        @can('manage_tournament', $tournament)
         <form id="wizard-form" action="{{ route('tournaments.events.update', [$tournament]) }}" method="POST">
             @csrf
             @if($mode === 'create')
@@ -48,6 +49,9 @@
 
             </div>
         </div>
+        @else
+            <div>У вас нет прав для управления расписанием этого турнира.</div>
+        @endcan
     </div>
 
     <script>
