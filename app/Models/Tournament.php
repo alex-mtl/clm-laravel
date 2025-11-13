@@ -198,21 +198,20 @@ class Tournament extends Model
             DB::raw('SUM(CASE WHEN game_participants.score_base = 1 AND game_participants.role = "mafia" THEN 1 ELSE 0 END) as mafia_wins'),
             DB::raw('SUM(CASE WHEN game_participants.score_base = 1 AND game_participants.role = "don" THEN 1 ELSE 0 END) as don_wins'),
             DB::raw('SUM(CASE WHEN game_participants.score_base = 1 AND game_participants.role = "sheriff" THEN 1 ELSE 0 END) as sheriff_wins'),
-//            DB::raw('SUM(CASE WHEN (game_participants.score_base = 1 and game_participants.role = "don") THEN 1 ELSE 0 END) as don_wins'),
-//            DB::raw('SUM(CASE WHEN (game_participants.score_base = 1 and game_participants.role = "sheriff") THEN 1 ELSE 0 END) as sheriff_wins'),
             DB::raw('SUM(game_participants.score_1) as score_1'),
             DB::raw('SUM(game_participants.score_2) as score_2'),
             DB::raw('SUM(game_participants.score_3) as score_3'),
             DB::raw('SUM(game_participants.score_4) as score_4'),
             DB::raw('SUM(game_participants.score_5) as score_5'),
             DB::raw('SUM(game_participants.score_total) as score_total'),
+            // Используем virtual column вместо JSON_EXTRACT для производительности
             DB::raw('SUM(
-                CASE WHEN JSON_UNQUOTE(JSON_EXTRACT(games.props, \'$."first-kill"\')) = game_participants.slot
+                CASE WHEN games.first_kill_slot = game_participants.slot
                 THEN 1 ELSE 0
                 END
             ) as first_kills'),
             DB::raw('SUM(
-                CASE WHEN (JSON_UNQUOTE(JSON_EXTRACT(games.props, \'$."first-kill"\')) = game_participants.slot AND
+                CASE WHEN (games.first_kill_slot = game_participants.slot AND
                 game_participants.score_base < 1 )
                 THEN 1 ELSE 0
                 END
@@ -226,7 +225,7 @@ class Tournament extends Model
                     ->on('game_participants.user_id', '=', 'tournament_participants.user_id');
             })
             ->where('tournament_participants.tournament_id', $this->id)
-            ->groupBy('tournament_participants.user_id', 'users.name')
+            ->groupBy('tournament_participants.user_id', 'users.name', 'users.avatar')
             ->orderByDesc('score_total')
             ->get();
 
