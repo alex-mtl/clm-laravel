@@ -26,6 +26,7 @@ class GameParticipant extends Pivot
         'score_4',
         'score_5',
         'score_total',
+        'score_count_flag',
         'mark',
         'mark_number',
         'warns'
@@ -40,7 +41,8 @@ class GameParticipant extends Pivot
         'score_4' => 'decimal:2',
         'score_5' => 'decimal:2',
         'mark_number' => 'decimal:0',
-        'score_total' => 'decimal:2'
+        'score_total' => 'decimal:2',
+        'score_count_flag' => 'string'
     ];
 
     public function game()

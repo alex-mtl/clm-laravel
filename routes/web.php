@@ -194,6 +194,8 @@ Route::prefix('clubs/{club}')->group(function () {
         'update' => 'clubs.tournaments.update',
         'destroy' => 'clubs.tournaments.destroy'
     ]);
+    Route::post('tournaments/{tournament}/calculate-scores', [TournamentController::class, 'calculateScores'])
+        ->name('clubs.tournaments.calculate-scores');
 });
 
 

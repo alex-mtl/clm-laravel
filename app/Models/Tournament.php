@@ -241,4 +241,30 @@ class Tournament extends Model
         return $stats;
     }
 
+    /**
+     * Определение сетки турнира на основе квоты игроков
+     * Округление к ближайшей сетке: 1-15 → '10', 16-25 → '20', 26-35 → '30', 36+ → '40'
+     */
+    public function determineGrid(): string
+    {
+        if ($this->players_quota <= 15) {
+            return '10';
+        } elseif ($this->players_quota <= 25) {
+            return '20';
+        } elseif ($this->players_quota <= 35) {
+            return '30';
+        } else {
+            return '40';
+        }
+    }
+
+    /**
+     * Получение очков за место в турнире из таблицы градации
+     */
+    public function getPointsForPlace(int $place): float
+    {
+        $grid = $this->determineGrid();
+        return config("tournament_points.grid.{$grid}.{$place}", 0);
+    }
+
 }
