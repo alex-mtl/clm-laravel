@@ -39,7 +39,7 @@
                                     </div>
                                 </div>
                                 <div class="frame-div">
-                                    <div class="club-rate">{{ $club->rating ?? 0 }}</div>
+                                    <div class="club-rate">{{ number_format($club->members_sum_glob_score ?? 0, 2) }}</div>
                                     <div class="rating-label">рейтинг</div>
                                 </div>
                             </div>

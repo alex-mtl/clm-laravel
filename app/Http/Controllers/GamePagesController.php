@@ -551,6 +551,9 @@ class GamePagesController extends Controller
             }
 
             $currentProps = $nextPhase;
+
+            // Пометить игру как завершенную
+            $game->is_finished = 1;
 //
 //            $currentProps = [
 //                'phase' => 'finished',

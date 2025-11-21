@@ -95,14 +95,14 @@ class PlayerPagesController extends Controller
                 'html' => '<span class="material-symbols-outlined">chart_data</span>',
                 'name' => "Рейтинг",
                 'class' => 'w-5 center',
-                'prop' => 'rating',
+                'prop' => 'glob_score',
                 'default' => '0',
             ],
 
 
 
         ])->map(fn($item) => (object)$item);
-        $users = User::latest()->paginate(30);
+        $users = User::orderByDesc('glob_score')->paginate(30);
 
         return view('players.index', [
             'cols' => $cols,

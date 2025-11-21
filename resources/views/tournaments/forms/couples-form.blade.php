@@ -2,6 +2,7 @@
 
 @section('content')
     <div class="content-main">
+        @can('manage_tournament', $tournament)
         <form id="couples-form" action="{{ route('tournaments.couples.store', [$tournament]) }}" method="POST">
             @csrf
             <input type="hidden" name="tournament_id" value="{{ $tournament->id }}">
@@ -78,5 +79,8 @@
 
             </div>
         </div>
+        @else
+            <div>У вас нет прав для управления парами в этом турнире.</div>
+        @endcan
     </div>
 @endsection

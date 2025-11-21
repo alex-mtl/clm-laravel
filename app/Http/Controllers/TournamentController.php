@@ -173,4 +173,35 @@ class TournamentController extends Controller
         $tournament->delete();
         return redirect()->route('tournaments.index')->with('success', 'Tournament deleted successfully.');
     }
+
+    public function calculateScores(Club $club, Tournament $tournament)
+    {
+        $this->authorize('calculate_scores', $tournament);
+
+        // Проверка статуса турнира
+        if ($tournament->phase !== 'in_progress') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Подсчет очков доступен только для турниров со статусом "В процессе"'
+            ], 400);
+        }
+
+        $scoreService = new \App\Services\TournamentScoreService();
+        $results = $scoreService->calculateScoresForTournament($tournament);
+
+        // Проверяем флаг незавершенного турнира
+        if (isset($results['incomplete_tournament']) && $results['incomplete_tournament']) {
+            return response()->json([
+                'success' => false,
+                'message' => $results['error_details'][0] ?? 'Турнир еще не завершен',
+                'data' => $results
+            ], 400);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Подсчет завершен. Обработано игроков: {$results['processed']}, Успешно: {$results['success']}, Ошибок: {$results['errors']}",
+            'data' => $results
+        ]);
+    }
 }

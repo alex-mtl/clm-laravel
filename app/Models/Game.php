@@ -243,6 +243,7 @@ class Game extends Model
         'judge_id',
         'table',
         'code',
+        'is_finished',
     ];
 
     protected $casts = [
@@ -251,6 +252,7 @@ class Game extends Model
         'end' => 'datetime',
         'props' => 'array',
         'protocol' => 'array',
+        'is_finished' => 'boolean',
     ];
 
 

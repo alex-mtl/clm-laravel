@@ -41,6 +41,9 @@ class User extends Authenticatable
         'email_verified_at',
         'email_verification_token',
         'google_id',
+        'glob_score',
+        'glob_games',
+        'glob_tournaments',
     ];
 
     /**
@@ -65,6 +68,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'glob_score' => 'float',
+            'glob_games' => 'integer',
+            'glob_tournaments' => 'integer',
         ];
     }
 

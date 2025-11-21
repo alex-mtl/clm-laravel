@@ -86,8 +86,8 @@
                         @foreach ($cols as $idx => $col)
                             <div  class="{{ $col->class ?? 'w-10' }}">{{ data_get($user, $col->prop, $col->default ?? '') }}</div>
                         @endforeach
-                            <div  class="w-5 center">{{ $user->games->count() }}</div>
-                            <div  class="w-5 center">{{ $user->tournaments->count() }}</div>
+                            <div  class="w-5 center">{{ $user->glob_games ?? 0 }}</div>
+                            <div  class="w-5 center">{{ $user->glob_tournaments ?? 0 }}</div>
                         </div>
                     @endforeach
                 </div>
