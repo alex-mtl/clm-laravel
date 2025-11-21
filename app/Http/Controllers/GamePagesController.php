@@ -1040,18 +1040,18 @@ class GamePagesController extends Controller
         $candidate = $validated['candidate'];
         $day = $validated['day'];
 
+//        dd($validated);
+
         //$currentProps['days']['D'.$newDay] = ['nominees' => [], 'votes' => [], 'speakers' => [], 'active_speaker' => null];
 
         $nominees = $game->props['days']['D'.$day]['nominees'] ?? [];
-        if((int)$candidate === 0) {
-            $nominees = array_filter($nominees, function($nominee) use ($slot) {
-                return $nominee['slot'] !== $slot;
-            });
-
-        } else {
+        $nominees = array_filter($nominees, function($nominee) use ($slot) {
+            return $nominee['slot'] !== $slot;
+        });
+        if((int)$candidate > 0) {
             $nominees[] = ['slot' => $slot, 'candidate' => $candidate ];
         }
-
+//        dd($nominees);
         $props = $game->props;
         $props['days']['D'.$day]['nominees'] = $nominees;
 
@@ -1210,8 +1210,8 @@ class GamePagesController extends Controller
     public function updateNominees(Request $request, Game $game)
     {
         $layout = request()->header('X-Ajax-Request') ? 'layouts.ajax' : 'layouts.app';
-        $games = Game::where('id', $game->id)->get();
-//        $games = Game::whereNot('id', $game->id)->get();
+//        $games = Game::where('id', $game->id)->get();
+        $games = Game::whereNot('id', $game->id)->get();
         $updates = 0;
 
         foreach ($games as $game) {
@@ -1286,9 +1286,11 @@ class GamePagesController extends Controller
 
 
         $night = $request->input('night', 'off');
+//        dd($request->all());
         if($night === 'on') {
             $props['days'][$votingDay]['voting']['result'] = [];
             $votedList = [];
+
         } elseif(count($votedList) > 0) {
             $props['days'][$votingDay]['voting']['result'] = $votedList;
             foreach ($votedList as $voted) {
@@ -1304,7 +1306,7 @@ class GamePagesController extends Controller
             $props['days'][$votingDay]['voting']['result'][] = $votedList;
             $status = $this->slotEliminate($game, $victim, 'voted');
         }
-
+//dd($props['days'][$votingDay]);
         $props['day'] = $day+1;
         if(!isset($game->props['days']['D'.$props['day']])) {
             $props['days']['D'.$props['day']] = ['nominees' => [], 'votes' => [], 'speakers' => [], 'active_speaker' => null];

@@ -26,9 +26,10 @@
         <div class="player-avatar">
             <span class="player-warns" onclick="removeWarning({{ $game->id }}, {{ $i }})">
             </span>
-            <a href="/players/{{ $slot['user_id'] }}" >
+{{--            <a href="/players/{{ $slot['user_id'] }}" >--}}
+            <span >
                 <img src="{{ $slot['avatar'] }}">
-            </a>
+            </span>
         </div>
 
         <div class="w-10 x-10">{{ $slot['name'] ?? '' }}</div>

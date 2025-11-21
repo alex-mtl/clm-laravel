@@ -41,6 +41,11 @@ class AjaxModal extends Component
 
     public function render()
     {
-        return view('components.ajax-modal');
+        if( !empty($this->container) ) {
+            return view('components.ajax-embed');
+        } else {
+            return view('components.ajax-modal');
+        }
+
     }
 }

@@ -3,9 +3,12 @@
 @section('content')
     <div class="form-wrapper">
 
-        <form class="flex-column w-20 gap-1" x-data="" x-ref="votingForm" id="voting-form" action="{{ route('games.voting', [$game->id]) }}" method="POST">
+        <form class="flex-column w-20 gap-1" x-data=""
+              x-ref="votingForm"
+              btnid="voting-btn"
+              id="voting-form" action="{{ route('games.voting', [$game->id]) }}" method="POST">
             @csrf
-            <button class="hidden" type="submit">Save</button>
+{{--            <button class="hidden" type="submit">Save</button>--}}
 {{--            <span>{{ $votingDay }}</span>--}}
             <x-custom-dropdown
                 name="votingDay"
@@ -95,11 +98,16 @@
                       x-data
                       @click="$refs.votingForm.requestSubmit()">Заголосовать</span>
 
-                <span class="btn ml-auto mr-auto"
-                      x-data
+                <span  class="btn ml-auto mr-auto"
+                       x-data="{ isSubmitting: false }"
                       @click="
-                              $refs.extraActionField.value = 'on';
-                              $refs.votingForm.requestSubmit();
+                      console.log(isSubmitting);
+                             if (!isSubmitting) {
+                                isSubmitting = true;
+                                $refs.extraActionField.value = 'on';
+                                $refs.votingForm.requestSubmit();
+{{--                                setTimeout(() => isSubmitting = false, 2000);--}}
+                            }
                           ">Ночь</span>
 
             </div>

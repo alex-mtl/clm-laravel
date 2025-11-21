@@ -112,6 +112,7 @@
     width: 1rem;
     background-color: white;
     text-align: center;
+    z-index: 100;
 }
 
 .slot-row[data-warns="1"] .player-warns::before {
