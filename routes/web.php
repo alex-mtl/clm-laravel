@@ -346,6 +346,9 @@ Route::get('/games/{game}/sheriff-check', [GamePagesController::class, 'sheriffC
 Route::post('/games/{game}/sheriff-check', [GamePagesController::class, 'sheriffCheck'])
     ->name('games.sheriffCheck');
 
+Route::get('/games/{game}/update-nominees', [GamePagesController::class, 'updateNominees'])
+    ->name('games.slots.updateNominees');
+
 Route::get('/games/{game}/slots/{slot}/restore', [GamePagesController::class, 'restoreForm'])
     ->name('games.slots.restoreForm');
 

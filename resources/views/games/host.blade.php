@@ -29,6 +29,12 @@
                 </span>
             </div>
         </div>
+        <div class="relative">
+            <button class="form-close hidden">&times;</button>
+            <div id="game-action-form-container">
+
+            </div>
+        </div>
         <div class="flex-column clm-border">
             @include('games.parts.header')
 

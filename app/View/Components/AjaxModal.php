@@ -13,6 +13,7 @@ class AjaxModal extends Component
     public $icon;
     public $class;
     public $callback;
+    public $container;
     public $btnid;
     public $hidden;
 
@@ -24,7 +25,7 @@ class AjaxModal extends Component
         return $this->endpoint;
     }
 
-    public function __construct($endpoint, $title = 'Form', $modalId = 'ajaxModal', $icon = 'add_circle', $class = '', $callback = null, $btnid = null, $hidden = 'false')
+    public function __construct($endpoint, $title = 'Form', $modalId = 'ajaxModal', $icon = 'add_circle', $class = '', $callback = null, $btnid = null, $hidden = 'false', $container = null)
     {
         $this->endpoint = $endpoint;
         $this->title = $title;
@@ -34,11 +35,17 @@ class AjaxModal extends Component
         $this->callback = $callback;
         $this->btnid = $btnid ?? Str::random(8);
         $this->hidden = $hidden;
+        $this->container = $container;
 
     }
 
     public function render()
     {
-        return view('components.ajax-modal');
+        if( !empty($this->container) ) {
+            return view('components.ajax-embed');
+        } else {
+            return view('components.ajax-modal');
+        }
+
     }
 }

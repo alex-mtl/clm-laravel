@@ -1,24 +1,43 @@
 @extends($layout ?: 'layouts.app')
 
 @section('content')
-    <div class="content-main">
-        <form class="flex-column w-20 gap-1" x-data="" x-ref="bestGuessForm" id="best-guess-form" action="{{ route('games.bestGuess', [$game->id]) }}" method="POST">
+    <div class="form-wrapper">
+        <form class="flex-column w-20 gap-1" x-data="" x-ref="bestGuessForm"
+              btnid="best-guess-btn" id="best-guess-form" action="{{ route('games.bestGuess', [$game->id]) }}" method="POST">
             @csrf
             <button class="hidden" type="submit">Save</button>
                 <div>Лучший ход</div>
                 @foreach($bestGuess as $m => $target)
 
-                    <x-synchronized-input
+{{--                    <x-synchronized-input--}}
+{{--                        name="bestGuess[{{$m}}]"--}}
+{{--                        label="Подозреваемый"--}}
+{{--                        value="{{ old('bestGuess.'.$m.'', $target) }}"--}}
+{{--                        placeholder="0"--}}
+{{--                        step="1"--}}
+{{--                        max="10"--}}
+{{--                        min="0"--}}
+{{--                        type="number"--}}
+{{--                    />--}}
+
+                    <x-slot-selector
                         name="bestGuess[{{$m}}]"
                         label="Подозреваемый"
-                        value="{{ old('bestGuess.'.$m.'', $target) }}"
-                        placeholder="0"
-                        step="1"
-                        max="10"
-                        min="0"
-                        type="number"
+                        selected-slot="{{ old('bestGuess.'.$m.'', $target) }}"
+                        :slot-availability="[
+                                    0 => true,
+                                    1 => true,
+                                    2 => true,
+                                    3 => true,
+                                    4 => true,
+                                    5 => true,
+                                    6 => true,
+                                    7 => true,
+                                    8 => true,
+                                    9 => true,
+                                    10 => true
+                                ]"
                     />
-
                 @endforeach
 
 

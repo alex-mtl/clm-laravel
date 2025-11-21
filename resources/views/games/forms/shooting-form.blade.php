@@ -1,8 +1,12 @@
 @extends($layout ?: 'layouts.app')
 
 @section('content')
-    <div class="content-main">
-        <form class="flex-column w-20 gap-1" x-data="" x-ref="shootingForm" id="shooting-form" action="{{ route('games.shooting', [$game->id]) }}" method="POST">
+    <div class="form-wrapper">
+        <form class="flex-column w-20 gap-1"
+              x-data=""
+              x-ref="shootingForm"
+              btnid="shooting-btn"
+              id="shooting-form" action="{{ route('games.shooting', [$game->id]) }}" method="POST">
             @csrf
             <button class="hidden" type="submit">Save</button>
             @if(empty($mafTeam))

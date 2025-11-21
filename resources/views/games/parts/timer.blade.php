@@ -75,7 +75,7 @@
 
             start(sec) {
                 this.reset(sec);
-                this.$el.classList.toggle('zero', this.seconds === 0);
+                this.$el.classList.toggle('zero', this.seconds <= 0);
                 this.resume();
             },
 
@@ -101,6 +101,7 @@
             reset(sec = null) {
                 this.pause();
                 this.seconds = sec !== null ? sec : initialSeconds;
+                this.$el.classList.toggle('zero', this.seconds <= 0);
             },
 
             formatTime() {

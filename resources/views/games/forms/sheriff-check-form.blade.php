@@ -1,8 +1,12 @@
 @extends($layout ?: 'layouts.app')
 
 @section('content')
-    <div class="content-main">
-        <form class="flex-column w-20 gap-1" x-data="" x-ref="sheriffCheckForm" id="sheriff-check-form" action="{{ route('games.sheriffCheck', [$game->id]) }}" method="POST">
+    <div class="form-wrapper">
+        <form class="flex-column w-20 gap-1"
+              x-data=""
+              x-ref="sheriffCheckForm"
+              btnid="sheriff-check-btn"
+              id="sheriff-check-form" action="{{ route('games.sheriffCheck', [$game->id]) }}" method="POST">
             @csrf
             <button class="hidden" type="submit">Save</button>
 

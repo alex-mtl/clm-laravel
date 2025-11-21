@@ -413,4 +413,22 @@ class Game extends Model
         }
         return $toasts;
     }
+
+    public static function getCandidateBySlot($nominees, $slot) {
+        foreach ($nominees as $nominee) {
+            if ($nominee['slot'] == $slot) {
+                return $nominee['candidate'];
+            }
+        }
+        return 0;
+    }
+
+    public static function nominations($nominees) {
+        $nominations = [];
+        foreach ($nominees as $nominee) {
+            $nominations[] = $nominee['candidate'];
+        }
+        return $nominations;
+    }
+
 }

@@ -2,18 +2,20 @@
     box-sizing: border-box;
 }
 .stream-game {
+    position: relative;
     margin: 0;
     font-family: Inter,Arial, sans-serif;
     /*background-color: #eee;*/
     background-color: transparent;
     display: flex;
     flex-direction: column;
-    height: 100%;
-    width: 100%;
+    height: 100vh;
+    width: 100vw;
     /*width: 1280px;*/
     /*height: 720px;*/
     /*border: dotted 1px lightgrey;*/
-    padding: 0.1vw;
+    padding: 0.1rem;
+    overflow: hidden;
 }
 
 .topbar {
@@ -73,6 +75,8 @@
 }
 
 .player-row {
+    position: absolute;
+    bottom: 0.5rem;
     display: flex;
     flex-direction: row;
     justify-content: center;
