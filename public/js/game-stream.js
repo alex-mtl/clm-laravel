@@ -135,7 +135,7 @@ function handleGameStateUpdate(game) {
                 bestGuess.classList.add('hidden')
             }
 
-            if(game.protocolColor[i] !== undefined) {
+            if(game.protocolColor[i] !== undefined && game.protocolColor[i]['slot'] != 0) {
                 const protocolColor = playerCard.querySelector('.protocol-color')
                 protocolColor.textContent = game.protocolColor[i]['slot'] ;
                 protocolColor.classList.add(game.protocolColor[i]['color'])

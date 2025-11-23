@@ -45,6 +45,13 @@
                 this.formHtml = html;
                 this.open = true;
                 this.popup.innerHTML = this.formHtml;
+                closeBtn = this.popup.parentElement.querySelector('.form-close')
+                    closeBtn.classList.remove('hidden')
+                    closeBtn.addEventListener('click', () => {
+                        closeBtn.classList.add('hidden')
+                        this.open = false;
+                        this.popup.innerHTML = '';
+                    });
             })
             .catch(err => {
                 this.error = 'Failed to load form: ' + err.message;
