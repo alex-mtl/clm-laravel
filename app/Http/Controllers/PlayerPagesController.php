@@ -88,7 +88,7 @@ class PlayerPagesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $cols = collect([
             [
@@ -98,15 +98,112 @@ class PlayerPagesController extends Controller
                 'prop' => 'rating',
                 'default' => '0',
             ],
-
-
-
         ])->map(fn($item) => (object)$item);
-        $users = User::latest()->paginate(30);
 
+        // Запрос с фильтрацией и сортировкой
+        $query = User::latest()->with(['country', 'city', 'club', 'games', 'tournaments']);
+
+        // Поиск по имени
+        if ($request->has('search') && $request->search) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        // Фильтр по стране
+        if ($request->has('country') && $request->country) {
+            $query->where('country_id', $request->country);
+        }
+
+        // Фильтр по городу
+        if ($request->has('city') && $request->city) {
+            $query->where('city_id', $request->city);
+        }
+
+        // Фильтр по клубу
+        if ($request->has('club')) {
+            if ($request->club === 'no_club') {
+                $query->whereNull('club_id');
+            } elseif ($request->club) {
+                $query->where('club_id', $request->club);
+            }
+        }
+
+        // Фильтр по количеству игр
+        if ($request->has('min_games') && $request->min_games) {
+            $query->has('games', '>=', $request->min_games);
+        }
+        if ($request->has('max_games') && $request->max_games) {
+            $query->has('games', '<=', $request->max_games);
+        }
+
+        // Фильтр по количеству турниров
+        if ($request->has('min_tournaments') && $request->min_tournaments) {
+            $query->has('tournaments', '>=', $request->min_tournaments);
+        }
+        if ($request->has('max_tournaments') && $request->max_tournaments) {
+            $query->has('tournaments', '<=', $request->max_tournaments);
+        }
+
+        // Сортировка
+        $sortField = $request->get('sort', 'name');
+        $sortOrder = $request->get('order', 'asc');
+
+        switch ($sortField) {
+            case 'rating':
+                $query->orderBy('rating', $sortOrder);
+                break;
+            case 'games_count':
+                $query->withCount('games')->orderBy('games_count', $sortOrder);
+                break;
+            case 'tournaments_count':
+                $query->withCount('tournaments')->orderBy('tournaments_count', $sortOrder);
+                break;
+            case 'country':
+                $query->join('countries', 'users.country_id', '=', 'countries.id')
+                    ->orderBy('countries.name', $sortOrder)
+                    ->select('users.*');
+                break;
+            case 'city':
+                $query->join('cities', 'users.city_id', '=', 'cities.id')
+                    ->orderBy('cities.name', $sortOrder)
+                    ->select('users.*');
+                break;
+            default:
+                $query->orderBy('name', $sortOrder);
+        }
+
+        $users = $query->paginate(30);
+
+        $sidebarMenu = collect([
+            [
+                'icon' => 'filter_alt',
+                'name' => 'Фильтры',
+                'action' => 'filters',
+                'handler' => 'filterOptions()', // Убедитесь, что есть скобки
+                'active' => $request->anyFilled(['search', 'country', 'city', 'club', 'min_games', 'max_games', 'min_tournaments', 'max_tournaments']),
+            ]
+        ])->map(function($item) {
+            return (object)$item;
+        });
+
+        $filterData = [
+            'countries' => Country::orderBy('name')->get(),
+            'cities' => City::orderBy('name')->get(),
+            'clubs' => Club::orderBy('name')->get(),
+        ];
+
+        if ($request->ajax()) {
+            // Для AJAX запросов возвращаем только частичный HTML
+            return view('players.partials.users_table', [
+                'users' => $users,
+                'cols' => $cols,
+            ]);
+        }
         return view('players.index', [
             'cols' => $cols,
-            ...compact('users'),
+            'sidebarMenu' => $sidebarMenu,
+            'filterData' => $filterData,
+            'users' => $users,
+            'currentFilters' => $request->all(),
         ]);
     }
 
