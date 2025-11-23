@@ -35,16 +35,16 @@
                 selected-slot="{{ old('slot', $slot) }}"
                 :slot-availability="[
                                 0 => true,
-                                1 => true,
-                                2 => true,
-                                3 => true,
-                                4 => true,
-                                5 => true,
-                                6 => true,
-                                7 => true,
-                                8 => true,
-                                9 => true,
-                                10 => true
+                                1 => $slots[1]['status'] === 'alive',
+                                2 => $slots[2]['status'] === 'alive',
+                                3 => $slots[3]['status'] === 'alive',
+                                4 =>  $slots[4]['status'] === 'alive',
+                                5 =>  $slots[5]['status'] === 'alive',
+                                6 =>  $slots[6]['status'] === 'alive',
+                                7 =>  $slots[7]['status'] === 'alive',
+                                8 => $slots[8]['status'] === 'alive',
+                                9 =>  $slots[9]['status'] === 'alive',
+                                10 =>  $slots[10]['status'] === 'alive'
                             ]"
             />
 

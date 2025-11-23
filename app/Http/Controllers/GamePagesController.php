@@ -809,15 +809,26 @@ class GamePagesController extends Controller
 
         $protocolColor = $game->props['days']['D'.$day]['protocol-color'] ?? [
             'slot' => 0,
-            'color' => 'red'
+            'color' => 'black'
         ];
 
+        $slots = $game->slots()->get()
+            ->keyBy('slot')
+            ->map(function ($slot) {
+                return [
+                    'role' => $slot->role,
+                    'status' => $slot->status ?? 'alive',
+                    'warns' => $slot->warns ?? 0,
+                ];
+            })
+            ->toArray();
 
         return view('games.forms.protocol-color-form', [
             'game' => $game,
             'protocolColorDay' => 'D'.$day,
             'dayOptions' => $dayOptions,
             'slot' => $protocolColor['slot'],
+            'slots' => $slots,
             'color' => $protocolColor['color'],
             'layout' => $layout,
             'mode' => 'show',
@@ -1428,10 +1439,12 @@ class GamePagesController extends Controller
 
         $props = $game->props;
 
-        $props['days']['D'.$day]['protocol-color'] = [
-            'slot' => $slot,
-            'color' => $color
-        ];
+        if ((int)$slot > 0) {
+            $props['days']['D' . $day]['protocol-color'] = [
+                'slot' => $slot,
+                'color' => $color
+            ];
+        }
 
         if($day !== $game->props['day']) {
             $props['day'] = $day;
