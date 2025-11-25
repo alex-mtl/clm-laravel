@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  app:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    container_name: mafia_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  webserver:
+    image: nginx:alpine
+    container_name: mafia_webserver
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - app-network
+
+  db:
+    image: mysql:8.0
+    container_name: mafia_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: onikclm
+      MYSQL_ROOT_PASSWORD: 11112222
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - app-network
+
+  artisan:
+    image: php:8.2-fpm
+    container_name: mafia_artisan
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    entrypoint: ["php", "artisan"]
+
+  mafia_node:
+      image: node:20.19.5
+      container_name: mafia_node
+      working_dir: /var/www
+      ports:
+          - "3001:3000"
+      volumes:
+          - ./:/var/www
+          - ./node_modules:/var/www/node_modules
+      command: >
+          sh -c "npm install -g npm@10 && npm install && npm run dev"
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysqldata:
+    driver: local

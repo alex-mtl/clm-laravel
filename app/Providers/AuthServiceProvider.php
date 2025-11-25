@@ -12,6 +12,7 @@ use App\Models\Role;
 use App\Policies\RolePolicy;
 use App\Models\User;
 use App\Models\Tournament;
+use App\Policies\TournamentPolicy;
 
 
 class AuthServiceProvider extends ServiceProvider
@@ -20,12 +21,19 @@ class AuthServiceProvider extends ServiceProvider
         ClubRequest::class => ClubRequestPolicy::class,
         Club::class => ClubPolicy::class,
         Role::class => RolePolicy::class,
+        Tournament::class => TournamentPolicy::class,
     ];
 
     public function boot()
     {
         $this->registerPolicies();
         Gate::define('manage_tournament', function (User $user, Tournament $tournament) {
+            // Для завершённых турниров только admin и super_admin
+            if ($tournament->phase === 'finished') {
+                return $user->isAdmin(); // isAdmin() проверяет admin ИЛИ super_admin
+            }
+
+            // Для остальных фаз - обычная проверка
             return $user->isTournamentOrganizer($tournament->club->id);
         });
 

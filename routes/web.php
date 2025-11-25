@@ -194,6 +194,8 @@ Route::prefix('clubs/{club}')->group(function () {
         'update' => 'clubs.tournaments.update',
         'destroy' => 'clubs.tournaments.destroy'
     ]);
+    Route::post('tournaments/{tournament}/calculate-scores', [TournamentController::class, 'calculateScores'])
+        ->name('clubs.tournaments.calculate-scores');
 });
 
 
@@ -213,6 +215,9 @@ Route::prefix('events/{event}')->group(function () {
 
 Route::get('/tournaments', [TournamentPagesController::class, 'index'])
     ->name('tournaments.index');
+
+Route::get('/tournaments/past', [TournamentPagesController::class, 'past'])
+    ->name('tournaments.past');
 
 Route::get('/tournaments/{tournament}', [TournamentPagesController::class, 'show'])
     ->name('tournaments.show');

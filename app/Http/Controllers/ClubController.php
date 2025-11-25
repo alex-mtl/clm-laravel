@@ -13,7 +13,10 @@ class ClubController extends Controller
 {
     public function index()
     {
-        $clubs = Club::with('owner')->latest()->paginate(10);
+        $clubs = Club::with('owner')
+            ->withSum('members', 'glob_score')
+            ->orderByDesc('members_sum_glob_score')
+            ->paginate(10);
         return view('clubs.index', [
             ...compact('clubs'),
             'styles' => ['clubs.css']
@@ -70,6 +73,9 @@ class ClubController extends Controller
         if(request()->has('tab') ) {
             session()->flash('tab', request('tab')); // One-time flash
         }
+
+        $club->loadSum('members', 'glob_score');
+
         return view('clubs.show', [
             ...compact('club'),
             'styles' => ['club-view.css'],

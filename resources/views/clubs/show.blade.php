@@ -60,7 +60,7 @@
             </div>
             <div class="clm-border flex-column gap-1 ta-center w-10">
 
-                <span><b class="">{{ $club->rating ?? 0 }}</b></span>
+                <span><b class="">{{ number_format($club->members_sum_glob_score ?? 0, 2) }}</b></span>
                 <div class="">рейтинг</div>
 
             </div>

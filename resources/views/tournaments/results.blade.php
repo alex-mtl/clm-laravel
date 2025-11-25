@@ -17,6 +17,7 @@
             <div class="w-10">
                 <div class="">Игрок</div>
             </div>
+            <span class="w-3 ta-right">БT</span>
             <span class="w-3 ta-right">Б</span>
             <span class="w-3 ta-center">ПИ</span>
             <span class="w-2 ta-right">-</span>
@@ -46,6 +47,7 @@
                 <div class="user-details w-10">
                     <div >{{ $participant->name }}</div>
                 </div>
+                <span class="w-3 ta-right">{{ number_format($tournament->getPointsForPlace($i), 1,'.', '') }}</span>
                 <span class="w-3 ta-right">{{ number_format($participant->score_total ?? 0, 2,'.', '') }}</span>
                 <span class="w-3 ta-center">{{ ($participant->wins ?? 0).'/'.($participant->games_played ?? 0) }}</span>
                 <span class="w-2 ta-right">{{ formatNumber($participant->score_1 ?? 0) }}</span>
@@ -68,6 +70,7 @@
         @endforeach
 
         <div class="flex-column">
+            <span>БT = Баллы турнира</span>
             <span>Б  = Баллы итого</span>
             <span>ПИ = Побед/Игр</span>
             <span>-  = Штраф</span>

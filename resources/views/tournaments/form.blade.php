@@ -117,10 +117,11 @@
         <div class="flex-row ">
             <div class="flex items-center justify-between gap-2">
                 @if($mode === 'create' || $mode === 'edit')
-                    <span class="btn"
-                          x-data
-                          @click="document.getElementById('tournament-form').submit()">Сохранить</span>
-
+                    @can('manage_tournament', $tournament)
+                        <span class="btn"
+                              x-data
+                              @click="document.getElementById('tournament-form').submit()">Сохранить</span>
+                    @endcan
                 @endif
 
                 @if($mode !== 'create')
@@ -167,3 +168,52 @@
         margin: 0.2rem;
     }
     </style>
+
+@if($mode === 'edit')
+<script>
+    async function calculateScores() {
+        const btn = document.getElementById('calculate-scores-btn');
+
+        if (!confirm('Вы уверены, что хотите подсчитать результаты турнира?')) {
+            return;
+        }
+
+        // Показываем индикатор загрузки
+        btn.disabled = true;
+        const originalText = btn.textContent;
+        btn.textContent = 'Подсчет...';
+
+        try {
+            const response = await fetch('{{ route("clubs.tournaments.calculate-scores", [$club, $tournament]) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                alert('✓ ' + data.message);
+
+                // Показываем детальную информацию если есть ошибки
+                if (data.data.errors > 0) {
+                    console.log('Детали ошибок:', data.data.error_details);
+                    alert('Внимание! Некоторые игроки не были обработаны. Проверьте логи для деталей.');
+                }
+            } else {
+                alert('✗ Ошибка: ' + (data.message || 'Неизвестная ошибка'));
+            }
+        } catch (error) {
+            console.error('Ошибка при подсчете очков:', error);
+            alert('✗ Произошла ошибка при выполнении запроса');
+        } finally {
+            // Восстанавливаем кнопку
+            btn.disabled = false;
+            btn.textContent = originalText;
+        }
+    }
+</script>
+@endif

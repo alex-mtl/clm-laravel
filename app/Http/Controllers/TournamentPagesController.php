@@ -95,8 +95,8 @@ class TournamentPagesController extends Controller
         if ($request->has('phase') && in_array($request->phase, array_keys(Tournament::PHASES))) {
             $query->where('phase', $request->phase);
         } else {
-            // Default: exclude draft, closed, finished
-            $query->whereNotIn('phase', ['draft', 'closed', 'finished']);
+            // Default: exclude Черновик, Завершен
+            $query->whereNotIn('phase', ['draft', 'finished']);
         }
 
         $tournaments = $query->orderBy('date_start', 'asc')->paginate(10);
@@ -106,6 +106,28 @@ class TournamentPagesController extends Controller
             'styles' => ['tournaments.css'],
             'noFooter' => true,
             'phase' => $request?->phase ?? null // Pass to view for UI feedback
+        ]);
+    }
+
+    // Прошедшие турниры
+    public function past(Request $request)
+    {
+        $query = Tournament::with('club');
+
+        // Apply phase filter if specified
+        if ($request->has('phase') && in_array($request->phase, array_keys(Tournament::PHASES))) {
+            $query->where('phase', $request->phase);
+        }else{
+            $query->whereIn('phase', ['finished']);
+        }
+
+        $tournaments = $query->orderBy('date_start', 'desc')->paginate(10);
+
+        return view('tournaments.index', [
+            'tournaments' => $tournaments,
+            'styles' => ['tournaments.css'],
+            'noFooter' => true,
+            'phase' => $request?->phase ?? null
         ]);
     }
 
